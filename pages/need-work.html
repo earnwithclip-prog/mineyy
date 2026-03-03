@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Start Earning — LocalServe</title>
+    <meta name="description"
+        content="Register your skills, go online, and start receiving job requests from nearby users." />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
+    <link rel="stylesheet" href="/styles/variables.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <script type="module" src="/js/main.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">L</div>LocalServe
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/pages/need-worker.html" data-i18n="srv1_title">Need a Worker</a>
+                <a href="/pages/need-work.html" class="active-link" data-i18n="srv2_title">Need Work</a>
+                <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
+                <a href="/pages/find-job.html" data-i18n="srv4_title">Find a Job</a>
+            </div>
+            <div class="nav-right">
+                <div class="lang-switcher">
+                    <button class="lang-btn">🌐 English ▾</button>
+                    <div class="lang-dropdown">
+                        <div class="lang-option active" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div>
+                        <div class="lang-option" data-lang="te">🇮🇳 తెలుగు</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span data-i18n="srv2_title">Need Work</span>
+            </div>
+            <h1 data-i18n="nwork_heading">Start Earning Today</h1>
+            <p data-i18n="nwork_sub">Register your skills, set your availability, and receive job requests from nearby
+                users.</p>
+        </div>
+    </div>
+
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="dashboard-layout">
+                <!-- Left: Main Content -->
+                <div class="dashboard-main">
+                    <!-- Online Toggle -->
+                    <div class="status-bar card reveal">
+                        <div class="toggle-container">
+                            <div class="toggle active" id="workerToggle"></div>
+                            <span class="toggle-status" data-i18n="nwork_online">You're Online</span>
+                        </div>
+                        <div class="status-indicator online">
+                            <span class="pulse-dot"></span>
+                            Active
+                        </div>
+                    </div>
+
+                    <!-- Earnings -->
+                    <div class="earnings-card reveal reveal-delay-1">
+                        <div class="ec-row">
+                            <div>
+                                <div class="ec-label" data-i18n="nwork_earnings">Today's Earnings</div>
+                                <div class="earnings-amount">₹2,450</div>
+                            </div>
+                            <div class="ec-stats">
+                                <div class="ec-stat">
+                                    <div class="ec-stat-value">12</div>
+                                    <div class="ec-stat-label" data-i18n="nwork_total_jobs">Jobs Completed</div>
+                                </div>
+                                <div class="ec-stat">
+                                    <div class="ec-stat-value">⭐ 4.8</div>
+                                    <div class="ec-stat-label" data-i18n="nwork_rating">Your Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Incoming Jobs -->
+                    <h3 class="section-title reveal reveal-delay-2" data-i18n="nwork_incoming">Incoming Jobs</h3>
+
+                    <div class="incoming-jobs">
+                        <div class="incoming-job card reveal reveal-delay-2">
+                            <div class="ij-header">
+                                <div class="ij-icon">🔧</div>
+                                <div class="ij-info">
+                                    <div class="ij-title">Plumbing Repair — Kitchen Sink</div>
+                                    <div class="ij-meta">📍 2.5 km away · ₹500 - ₹700</div>
+                                    <div class="ij-time">⏰ Requested 2 min ago</div>
+                                </div>
+                            </div>
+                            <div class="ij-actions">
+                                <button class="btn btn-primary btn-sm" data-i18n="nwork_accept">Accept</button>
+                                <button class="btn btn-secondary btn-sm" data-i18n="nwork_reject">Decline</button>
+                            </div>
+                        </div>
+
+                        <div class="incoming-job card reveal reveal-delay-3">
+                            <div class="ij-header">
+                                <div class="ij-icon">❄️</div>
+                                <div class="ij-info">
+                                    <div class="ij-title">AC Servicing — Split Unit</div>
+                                    <div class="ij-meta">📍 1.2 km away · ₹800 - ₹1,200</div>
+                                    <div class="ij-time">⏰ Requested 5 min ago</div>
+                                </div>
+                            </div>
+                            <div class="ij-actions">
+                                <button class="btn btn-primary btn-sm" data-i18n="nwork_accept">Accept</button>
+                                <button class="btn btn-secondary btn-sm" data-i18n="nwork_reject">Decline</button>
+                            </div>
+                        </div>
+
+                        <div class="incoming-job card reveal reveal-delay-4">
+                            <div class="ij-header">
+                                <div class="ij-icon">⚡</div>
+                                <div class="ij-info">
+                                    <div class="ij-title">Electrical Wiring — Living Room</div>
+                                    <div class="ij-meta">📍 3.8 km away · ₹600 - ₹900</div>
+                                    <div class="ij-time">⏰ Requested 8 min ago</div>
+                                </div>
+                            </div>
+                            <div class="ij-actions">
+                                <button class="btn btn-primary btn-sm" data-i18n="nwork_accept">Accept</button>
+                                <button class="btn btn-secondary btn-sm" data-i18n="nwork_reject">Decline</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Sidebar -->
+                <div class="dashboard-sidebar">
+                    <div class="card reveal">
+                        <h4>Quick Stats</h4>
+                        <div class="quick-stats">
+                            <div class="qs-item">
+                                <div class="qs-value">156</div>
+                                <div class="qs-label">Total Jobs</div>
+                            </div>
+                            <div class="qs-item">
+                                <div class="qs-value">₹32K</div>
+                                <div class="qs-label">This Month</div>
+                            </div>
+                            <div class="qs-item">
+                                <div class="qs-value">4.8</div>
+                                <div class="qs-label">Avg Rating</div>
+                            </div>
+                            <div class="qs-item">
+                                <div class="qs-value">95%</div>
+                                <div class="qs-label">Accept Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card reveal reveal-delay-1">
+                        <h4 data-i18n="nwork_history">Job History</h4>
+                        <div class="history-list">
+                            <div class="history-item">
+                                <div class="hi-icon">✅</div>
+                                <div class="hi-info">
+                                    <div class="hi-title">AC Repair</div>
+                                    <div class="hi-meta">₹800 · 2 hrs ago</div>
+                                </div>
+                            </div>
+                            <div class="history-item">
+                                <div class="hi-icon">✅</div>
+                                <div class="hi-info">
+                                    <div class="hi-title">Plumbing Fix</div>
+                                    <div class="hi-meta">₹450 · 4 hrs ago</div>
+                                </div>
+                            </div>
+                            <div class="history-item">
+                                <div class="hi-icon">✅</div>
+                                <div class="hi-info">
+                                    <div class="hi-title">Electrical Work</div>
+                                    <div class="hi-meta">₹650 · Yesterday</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
+                <div class="footer-socials"><a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

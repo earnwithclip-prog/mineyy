@@ -1,0 +1,87 @@
+/* ===== DESIGN TOKENS ===== */
+:root {
+  /* Primary Palette */
+  --color-primary: #7C3AED;
+  --color-primary-dark: #4F46E5;
+  --color-accent: #6366F1;
+  --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #6D28D9 0%, #4338CA 100%);
+  --gradient-dark: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  --gradient-cta: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);
+
+  /* Backgrounds */
+  --bg-body: #F8FAFC;
+  --bg-white: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-dark: #0F172A;
+  --bg-dark-card: #1E293B;
+  --bg-dark-card-hover: #334155;
+
+  /* Text */
+  --text-heading: #0F172A;
+  --text-body: #334155;
+  --text-muted: #94A3B8;
+  --text-white: #FFFFFF;
+  --text-white-muted: #CBD5E1;
+
+  /* Borders & Shadows */
+  --border-light: #E2E8F0;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.08);
+  --shadow-xl: 0 16px 48px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.15);
+  --shadow-card-hover: 0 20px 60px rgba(15, 23, 42, 0.12);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Poppins', 'Inter', system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* Container */
+  --container-max: 1200px;
+  --container-wide: 1400px;
+}

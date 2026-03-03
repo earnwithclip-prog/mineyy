@@ -1,0 +1,703 @@
+/* ===== PAGES SHARED STYLES ===== */
+
+.active-link {
+    color: var(--color-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* ===== BOOKING SECTION (Need Worker) ===== */
+.booking-section {
+    padding: var(--space-2xl) 0 var(--space-5xl);
+}
+
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: var(--space-3xl);
+    padding: var(--space-xl) var(--space-2xl);
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    overflow-x: auto;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    transition: all var(--transition-base);
+}
+
+.step.active {
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #E2E8F0;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    transition: all var(--transition-base);
+}
+
+.step.active .step-num {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.step-label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.step.active .step-label {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.step-line {
+    width: 40px;
+    height: 2px;
+    background: #E2E8F0;
+    flex-shrink: 0;
+}
+
+.booking-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--space-2xl);
+    align-items: start;
+}
+
+.booking-form {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.booking-step {
+    display: none;
+}
+
+.booking-step.active {
+    display: block;
+    animation: fadeInUp 0.4s ease;
+}
+
+.booking-step h3 {
+    margin-bottom: var(--space-xl);
+}
+
+.upload-area {
+    border: 2px dashed var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--space-3xl);
+    text-align: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.upload-area:hover {
+    border-color: var(--color-primary);
+    background: rgba(124, 58, 237, 0.02);
+}
+
+.upload-icon {
+    font-size: 32px;
+    margin-bottom: var(--space-sm);
+}
+
+.budget-slider {
+    padding: var(--space-md) 0;
+}
+
+.range-input {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #E2E8F0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+.budget-display {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+.budget-value {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+.booking-summary {
+    background: #F8FAFC;
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: var(--text-sm);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-row span:first-child {
+    color: var(--text-muted);
+}
+
+.summary-row span:last-child {
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.step-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border-light);
+}
+
+.booking-sidebar h3 {
+    margin-bottom: var(--space-lg);
+}
+
+.sidebar-workers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* ===== DASHBOARD SECTION (Need Work) ===== */
+.dashboard-section {
+    padding: var(--space-xl) 0 var(--space-5xl);
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: var(--space-2xl);
+    align-items: start;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.status-indicator.online {
+    color: #22C55E;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22C55E;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.earnings-card .ec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ec-label {
+    font-size: var(--text-sm);
+    opacity: 0.8;
+}
+
+.ec-stats {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.ec-stat {
+    text-align: center;
+}
+
+.ec-stat-value {
+    font-size: var(--text-xl);
+    font-weight: 800;
+}
+
+.ec-stat-label {
+    font-size: var(--text-xs);
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+.earnings-card {
+    margin-bottom: var(--space-xl);
+}
+
+.section-title {
+    margin-bottom: var(--space-lg);
+}
+
+.incoming-jobs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.incoming-job {
+    padding: var(--space-xl);
+}
+
+.ij-header {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.ij-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: rgba(124, 58, 237, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.ij-title {
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 4px;
+}
+
+.ij-meta {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+.ij-time {
+    font-size: var(--text-xs);
+    color: var(--color-primary);
+    margin-top: 4px;
+}
+
+.ij-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.dashboard-sidebar h4 {
+    margin-bottom: var(--space-lg);
+}
+
+.quick-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.qs-item {
+    text-align: center;
+    padding: var(--space-md);
+    background: #F8FAFC;
+    border-radius: var(--radius-lg);
+}
+
+.qs-value {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--color-primary);
+}
+
+.qs-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-fast);
+}
+
+.history-item:hover {
+    background: #F8FAFC;
+}
+
+.hi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.hi-title {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--text-heading);
+}
+
+.hi-meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ===== HIRE SECTION ===== */
+.hire-section {
+    padding: var(--space-xl) 0 var(--space-5xl);
+}
+
+.hire-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: var(--space-2xl);
+    align-items: start;
+}
+
+.hire-form {
+    padding: var(--space-2xl);
+}
+
+.hire-form h3 {
+    margin-bottom: var(--space-xl);
+}
+
+.salary-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.salary-to {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+}
+
+.benefit-check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.benefit-check:hover {
+    border-color: var(--color-primary);
+    background: rgba(124, 58, 237, 0.02);
+}
+
+.benefit-check input[type="checkbox"] {
+    accent-color: var(--color-primary);
+}
+
+.hire-sidebar h3 {
+    margin-bottom: var(--space-lg);
+}
+
+.active-jobs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.job-applicants {
+    margin-top: var(--space-md);
+}
+
+/* ===== JOBS SECTION (Find Job) ===== */
+.jobs-section {
+    padding: var(--space-xl) 0 var(--space-5xl);
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--bg-white);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-full);
+    padding: 8px 8px 8px 24px;
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-md);
+    transition: border-color var(--transition-fast);
+}
+
+.search-bar:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+.search-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: var(--text-base);
+    color: var(--text-heading);
+    background: transparent;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-2xl);
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 10px 16px;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-body);
+    background: var(--bg-white);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.filter-select:focus {
+    border-color: var(--color-primary);
+}
+
+.filter-pills {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+}
+
+.filter-pills .pill {
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-pills .pill:hover,
+.filter-pills .pill.active {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.jobs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.job-card-full {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    transition: all var(--transition-base);
+}
+
+.job-card-full:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(124, 58, 237, 0.15);
+}
+
+.jcf-left {
+    display: flex;
+    gap: var(--space-lg);
+    flex: 1;
+}
+
+.jcf-company-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+}
+
+.jcf-info .job-title {
+    font-size: var(--text-lg);
+}
+
+.jcf-info .job-company {
+    margin-bottom: var(--space-sm);
+}
+
+.jcf-info .job-meta {
+    margin-top: var(--space-sm);
+}
+
+.job-benefits {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.benefit-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(124, 58, 237, 0.06);
+    color: var(--color-primary);
+    font-size: var(--text-xs);
+    font-weight: 500;
+}
+
+.jcf-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE FOR PAGES ===== */
+@media (max-width: 1024px) {
+
+    .booking-layout,
+    .dashboard-layout,
+    .hire-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .progress-steps {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0;
+    }
+
+    .step-label {
+        display: none;
+    }
+
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .job-card-full {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-lg);
+    }
+
+    .jcf-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .jcf-actions .btn {
+        flex: 1;
+    }
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-bar {
+        border-radius: var(--radius-xl);
+    }
+
+    .filter-pills {
+        margin-left: 0;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hire Monthly Employees — LocalServe</title>
+    <meta name="description" content="Post monthly job openings and find reliable employees for your business." />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
+    <link rel="stylesheet" href="/styles/variables.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <script type="module" src="/js/main.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">L</div>LocalServe
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/pages/need-worker.html" data-i18n="srv1_title">Need a Worker</a>
+                <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
+                <a href="/pages/hire-monthly.html" class="active-link" data-i18n="srv3_title">Hire Employee</a>
+                <a href="/pages/find-job.html" data-i18n="srv4_title">Find a Job</a>
+            </div>
+            <div class="nav-right">
+                <div class="lang-switcher">
+                    <button class="lang-btn">🌐 English ▾</button>
+                    <div class="lang-dropdown">
+                        <div class="lang-option active" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div>
+                        <div class="lang-option" data-lang="te">🇮🇳 తెలుగు</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span data-i18n="srv3_title">Hire
+                    Employee</span></div>
+            <h1 data-i18n="hire_heading">Hire Monthly Employees</h1>
+            <p data-i18n="hire_sub">Post job openings and find reliable employees for your business.</p>
+        </div>
+    </div>
+
+    <section class="hire-section">
+        <div class="container">
+            <div class="hire-layout">
+                <!-- Job Posting Form -->
+                <div class="hire-form card reveal">
+                    <h3>Post a New Job</h3>
+                    <form class="hiring-form">
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="hire_job_title">Job Title</label>
+                            <select class="form-input">
+                                <option>Select Job Role</option>
+                                <option>Salesman</option>
+                                <option>Mechanic</option>
+                                <option>Receptionist</option>
+                                <option>Delivery Boy</option>
+                                <option>Cashier</option>
+                                <option>Cook / Chef</option>
+                                <option>Driver</option>
+                                <option>Helper</option>
+                                <option>Security Guard</option>
+                                <option>Office Assistant</option>
+                            </select>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_openings">Number of Openings</label>
+                                <input type="number" class="form-input" value="1" min="1" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_hours">Working Hours</label>
+                                <select class="form-input">
+                                    <option>Full Time (8 hrs)</option>
+                                    <option>Part Time (4 hrs)</option>
+                                    <option>Half Day (6 hrs)</option>
+                                    <option>Flexible</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_salary">Monthly Salary Range</label>
+                                <div class="salary-inputs">
+                                    <input type="number" class="form-input" placeholder="₹ Min" />
+                                    <span class="salary-to">to</span>
+                                    <input type="number" class="form-input" placeholder="₹ Max" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_experience">Experience Required</label>
+                                <select class="form-input">
+                                    <option>Fresher</option>
+                                    <option>1-2 Years</option>
+                                    <option>2-5 Years</option>
+                                    <option>5+ Years</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="hire_benefits">Benefits</label>
+                            <div class="benefits-grid">
+                                <label class="benefit-check"><input type="checkbox" /> 🍽️ Food Provided</label>
+                                <label class="benefit-check"><input type="checkbox" /> 🏠 Accommodation</label>
+                                <label class="benefit-check"><input type="checkbox" /> 🏥 Health Insurance</label>
+                                <label class="benefit-check"><input type="checkbox" /> 📅 Paid Leaves</label>
+                                <label class="benefit-check"><input type="checkbox" /> 🎯 Bonus</label>
+                                <label class="benefit-check"><input type="checkbox" /> 🚌 Transport</label>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_location">Job Location</label>
+                                <input type="text" class="form-input" placeholder="e.g., Hyderabad, Secunderabad" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="hire_join_date">Expected Joining Date</label>
+                                <input type="date" class="form-input" />
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-lg"
+                            style="width: 100%; margin-top: var(--space-md);" data-i18n="hire_post">Post Job →</button>
+                    </form>
+                </div>
+
+                <!-- Active Job Posts -->
+                <div class="hire-sidebar">
+                    <h3 data-i18n="hire_active" class="reveal">Active Job Posts</h3>
+                    <div class="active-jobs">
+                        <div class="job-card reveal reveal-delay-1">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Salesman</div>
+                                    <div class="job-company">Sharma Electronics</div>
+                                </div>
+                                <div class="job-salary">₹12K - ₹15K</div>
+                            </div>
+                            <div class="job-meta">
+                                <div class="job-meta-item">📍 Hyderabad</div>
+                                <div class="job-meta-item">⏰ Full Time</div>
+                                <div class="job-meta-item">👤 3 Openings</div>
+                            </div>
+                            <div class="job-applicants">
+                                <span class="pill pill-primary">12 Applications</span>
+                            </div>
+                        </div>
+
+                        <div class="job-card reveal reveal-delay-2">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Delivery Boy</div>
+                                    <div class="job-company">QuickMart Store</div>
+                                </div>
+                                <div class="job-salary">₹10K - ₹12K</div>
+                            </div>
+                            <div class="job-meta">
+                                <div class="job-meta-item">📍 Secunderabad</div>
+                                <div class="job-meta-item">⏰ Full Time</div>
+                                <div class="job-meta-item">👤 5 Openings</div>
+                            </div>
+                            <div class="job-applicants">
+                                <span class="pill pill-primary">8 Applications</span>
+                            </div>
+                        </div>
+
+                        <div class="job-card reveal reveal-delay-3">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Cook / Chef</div>
+                                    <div class="job-company">Spice Garden Restaurant</div>
+                                </div>
+                                <div class="job-salary">₹15K - ₹20K</div>
+                            </div>
+                            <div class="job-meta">
+                                <div class="job-meta-item">📍 Jubilee Hills</div>
+                                <div class="job-meta-item">⏰ Full Time</div>
+                                <div class="job-meta-item">👤 2 Openings</div>
+                            </div>
+                            <div class="job-applicants">
+                                <span class="pill pill-primary">18 Applications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
+                <div class="footer-socials"><a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

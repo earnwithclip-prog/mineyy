@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LocalServe — The Future of Local Services & Jobs</title>
+  <meta name="description"
+    content="AI-powered matching. Real-time tracking. Trusted local hiring. Connect with skilled workers or find your next opportunity." />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
+  <link rel="stylesheet" href="/styles/variables.css" />
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/components.css" />
+  <link rel="stylesheet" href="/styles/landing.css" />
+  <script type="module" src="/js/main.js"></script>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">L</div>
+        LocalServe
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#services" data-i18n="nav_services">Services</a>
+        <a href="/pages/need-worker.html" data-i18n="nav_hire">Hire</a>
+        <a href="/pages/find-job.html" data-i18n="nav_jobs">Jobs</a>
+      </div>
+      <div class="nav-right">
+        <div class="lang-switcher">
+          <button class="lang-btn" aria-label="Select Language">🌐 English ▾</button>
+          <div class="lang-dropdown" id="langDropdown">
+            <div class="lang-option active" data-lang="en">🇺🇸 English</div>
+            <div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div>
+            <div class="lang-option" data-lang="te">🇮🇳 తెలుగు</div>
+          </div>
+        </div>
+        <a href="/pages/need-worker.html" class="btn btn-primary btn-sm" data-i18n="nav_get_started">Get Started</a>
+      </div>
+      <div class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-pill reveal">
+            <span>🚀</span> The #1 Local Services Platform
+          </div>
+          <h1 class="hero-heading reveal reveal-delay-1" data-i18n="hero_heading">
+            THE FUTURE OF LOCAL SERVICES & JOBS.
+          </h1>
+          <p class="hero-sub reveal reveal-delay-2" data-i18n="hero_sub">
+            AI-powered matching. Real-time tracking. Trusted local hiring.
+          </p>
+          <div class="hero-actions reveal reveal-delay-3">
+            <a href="/pages/need-worker.html" class="btn btn-primary btn-lg" data-i18n="hero_cta">
+              Get Started →
+            </a>
+            <a href="#preview" class="btn btn-secondary btn-lg" data-i18n="hero_cta2">
+              Watch Demo
+            </a>
+          </div>
+          <div class="hero-trust reveal reveal-delay-4">
+            <div class="trust-avatars">
+              <div class="trust-avatar" style="background: #7C3AED;">R</div>
+              <div class="trust-avatar" style="background: #4F46E5;">S</div>
+              <div class="trust-avatar" style="background: #6366F1;">A</div>
+              <div class="trust-avatar" style="background: #8B5CF6;">M</div>
+            </div>
+            <span>Trusted by <strong>10,000+</strong> users</span>
+          </div>
+        </div>
+        <div class="hero-visual reveal">
+          <div class="hero-image-wrapper">
+            <img src="/assets/hero.png" alt="Skilled Workers" class="hero-image" />
+            <div class="hero-glow"></div>
+          </div>
+          <!-- Floating stat badges -->
+          <div class="stat-badge stat-badge-1" style="animation-delay: 0s;">
+            <span>✅</span>
+            <span data-i18n="stat_jobs">50K+ Jobs Completed</span>
+          </div>
+          <div class="stat-badge stat-badge-2" style="animation-delay: 1s;">
+            <span>👥</span>
+            <span data-i18n="stat_workers">1.5K+ Active Workers</span>
+          </div>
+          <div class="stat-badge stat-badge-3" style="animation-delay: 2s;">
+            <span>🛡️</span>
+            <span data-i18n="stat_secure">Verified & Secure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Background decoration -->
+    <div class="hero-bg-decoration"></div>
+  </section>
+
+  <!-- ===== FEATURES SECTION ===== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal" data-i18n="features_pill">✨ Why Choose Us</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="features_heading">Powerful Features Built for Everyone</h2>
+        <p class="reveal reveal-delay-2" data-i18n="features_sub">Everything you need to find, hire, and manage workers
+          or land your dream opportunity — all in one platform.</p>
+      </div>
+      <div class="grid-4">
+        <div class="card reveal reveal-delay-1">
+          <div class="card-icon">⚡</div>
+          <h4 class="card-title" data-i18n="feat1_title">Real-Time Matching</h4>
+          <p class="card-desc" data-i18n="feat1_desc">Our AI instantly matches your needs with the best available
+            skilled workers near your location.</p>
+        </div>
+        <div class="card reveal reveal-delay-2">
+          <div class="card-icon">📍</div>
+          <h4 class="card-title" data-i18n="feat2_title">Live GPS Tracking</h4>
+          <p class="card-desc" data-i18n="feat2_desc">Track your booked worker in real-time from acceptance to arrival
+            and job completion.</p>
+        </div>
+        <div class="card reveal reveal-delay-3">
+          <div class="card-icon">🛡️</div>
+          <h4 class="card-title" data-i18n="feat3_title">Verified Workers</h4>
+          <p class="card-desc" data-i18n="feat3_desc">Every worker goes through ID verification, skill assessment, and
+            background checks.</p>
+        </div>
+        <div class="card reveal reveal-delay-4">
+          <div class="card-icon">💼</div>
+          <h4 class="card-title" data-i18n="feat4_title">Monthly Job Hiring</h4>
+          <p class="card-desc" data-i18n="feat4_desc">Post and find monthly employment opportunities with salary
+            negotiation and benefits.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES SECTION ===== -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal" data-i18n="services_pill">🚀 Our Services</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="services_heading">Four Ways to Connect</h2>
+        <p class="reveal reveal-delay-2" data-i18n="services_sub">Instant services, quick jobs, monthly hiring —
+          whatever you need, we've got you covered.</p>
+      </div>
+      <div class="services-grid">
+        <!-- Service 1 -->
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-card-header">
+            <span class="pill pill-primary" data-i18n="srv1_tag">Instant</span>
+            <span class="service-num">01</span>
+          </div>
+          <div class="service-icon-lg">🔧</div>
+          <h3 data-i18n="srv1_title">Need a Worker</h3>
+          <p data-i18n="srv1_desc">Book skilled workers for plumbing, electrical, cleaning, AC repair and more — on
+            demand.</p>
+          <a href="/pages/need-worker.html" class="service-cta" data-i18n="srv1_cta">Book Now →</a>
+        </div>
+        <!-- Service 2 -->
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-card-header">
+            <span class="pill pill-primary" data-i18n="srv2_tag">Quick Jobs</span>
+            <span class="service-num">02</span>
+          </div>
+          <div class="service-icon-lg">💪</div>
+          <h3 data-i18n="srv2_title">Need Work</h3>
+          <p data-i18n="srv2_desc">Register your skills, go online, and get matched with nearby job requests instantly.
+          </p>
+          <a href="/pages/need-work.html" class="service-cta" data-i18n="srv2_cta">Start Earning →</a>
+        </div>
+        <!-- Service 3 -->
+        <div class="service-card reveal reveal-delay-3">
+          <div class="service-card-header">
+            <span class="pill pill-primary" data-i18n="srv3_tag">Monthly</span>
+            <span class="service-num">03</span>
+          </div>
+          <div class="service-icon-lg">🏢</div>
+          <h3 data-i18n="srv3_title">Hire Employee</h3>
+          <p data-i18n="srv3_desc">Post monthly job openings for your shop or business and find reliable employees.</p>
+          <a href="/pages/hire-monthly.html" class="service-cta" data-i18n="srv3_cta">Post a Job →</a>
+        </div>
+        <!-- Service 4 -->
+        <div class="service-card reveal reveal-delay-4">
+          <div class="service-card-header">
+            <span class="pill pill-primary" data-i18n="srv4_tag">Careers</span>
+            <span class="service-num">04</span>
+          </div>
+          <div class="service-icon-lg">🎯</div>
+          <h3 data-i18n="srv4_title">Find a Job</h3>
+          <p data-i18n="srv4_desc">Browse monthly job listings in your area. Apply, chat with employers, and get hired.
+          </p>
+          <a href="/pages/find-job.html" class="service-cta" data-i18n="srv4_cta">Search Jobs →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD PREVIEW SECTION ===== -->
+  <section class="preview" id="preview">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal" data-i18n="preview_pill">📱 App Preview</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="preview_heading">Beautiful Apps, Powerful Features</h2>
+        <p class="reveal reveal-delay-2" data-i18n="preview_sub">Clean, intuitive interfaces designed so anyone can use
+          them effortlessly.</p>
+      </div>
+      <div class="preview-tabs reveal" data-tab-group="preview">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab-btn="user" data-i18n="preview_user">User App</button>
+          <button class="tab-btn" data-tab-btn="worker" data-i18n="preview_worker">Worker Dashboard</button>
+          <button class="tab-btn" data-tab-btn="admin" data-i18n="preview_admin">Admin Panel</button>
+        </div>
+        <div class="preview-content">
+          <!-- User App -->
+          <div class="preview-panel active" data-tab-content="user">
+            <div class="preview-device">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <div class="phone-ui phone-ui-user">
+                    <div class="phone-statusbar">
+                      <span>9:41</span>
+                      <span>📶 🔋</span>
+                    </div>
+                    <div class="phone-greeting">Hello, Pranay! 👋</div>
+                    <div class="phone-search">🔍 Search services...</div>
+                    <div class="phone-cat-grid">
+                      <div class="phone-cat">🔧<br><small>Plumber</small></div>
+                      <div class="phone-cat">⚡<br><small>Electric</small></div>
+                      <div class="phone-cat">🧹<br><small>Cleaner</small></div>
+                      <div class="phone-cat">❄️<br><small>AC</small></div>
+                      <div class="phone-cat">🪚<br><small>Carpenter</small></div>
+                      <div class="phone-cat">🎨<br><small>Paint</small></div>
+                    </div>
+                    <div class="phone-section-title">Nearby Workers</div>
+                    <div class="phone-worker-card">
+                      <div class="pw-avatar">R</div>
+                      <div class="pw-info">
+                        <div class="pw-name">Raju K.</div>
+                        <div class="pw-skill">Plumber · ⭐ 4.8</div>
+                      </div>
+                      <div class="pw-status online"></div>
+                    </div>
+                    <div class="phone-worker-card">
+                      <div class="pw-avatar" style="background: #4F46E5;">S</div>
+                      <div class="pw-info">
+                        <div class="pw-name">Suresh M.</div>
+                        <div class="pw-skill">Electrician · ⭐ 4.9</div>
+                      </div>
+                      <div class="pw-status online"></div>
+                    </div>
+                    <div class="phone-bottom-nav">
+                      <div class="pbn-item active">🏠<br><small>Home</small></div>
+                      <div class="pbn-item">📋<br><small>Bookings</small></div>
+                      <div class="pbn-item pbn-center">➕</div>
+                      <div class="pbn-item">💬<br><small>Chat</small></div>
+                      <div class="pbn-item">👤<br><small>Profile</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="preview-info">
+              <h3>User App Experience</h3>
+              <p>Book skilled workers in seconds. Browse categories, view nearby workers, track them in real-time, and
+                pay securely — all from one clean interface.</p>
+              <ul class="preview-features-list">
+                <li>🔍 Instant search & categories</li>
+                <li>📍 Nearby worker discovery</li>
+                <li>📱 Real-time GPS tracking</li>
+                <li>💳 Secure payments</li>
+                <li>⭐ Ratings & reviews</li>
+              </ul>
+            </div>
+          </div>
+          <!-- Worker Dashboard -->
+          <div class="preview-panel" data-tab-content="worker">
+            <div class="preview-device">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <div class="phone-ui phone-ui-worker">
+                    <div class="phone-statusbar">
+                      <span>9:41</span>
+                      <span>📶 🔋</span>
+                    </div>
+                    <div class="phone-greeting">Worker Dashboard</div>
+                    <div class="phone-toggle-row">
+                      <span>Online Status</span>
+                      <div class="phone-toggle on"></div>
+                    </div>
+                    <div class="phone-earnings">
+                      <div class="pe-label">Today's Earnings</div>
+                      <div class="pe-amount">₹2,450</div>
+                      <div class="pe-sub">12 jobs completed</div>
+                    </div>
+                    <div class="phone-section-title">Incoming Jobs</div>
+                    <div class="phone-job-card">
+                      <div class="pj-icon">🔧</div>
+                      <div class="pj-info">
+                        <div class="pj-title">Plumbing Repair</div>
+                        <div class="pj-loc">📍 2.5 km · ₹500</div>
+                      </div>
+                      <div class="pj-actions">
+                        <button class="pj-accept">✓</button>
+                        <button class="pj-reject">✕</button>
+                      </div>
+                    </div>
+                    <div class="phone-job-card">
+                      <div class="pj-icon">❄️</div>
+                      <div class="pj-info">
+                        <div class="pj-title">AC Servicing</div>
+                        <div class="pj-loc">📍 1.2 km · ₹800</div>
+                      </div>
+                      <div class="pj-actions">
+                        <button class="pj-accept">✓</button>
+                        <button class="pj-reject">✕</button>
+                      </div>
+                    </div>
+                    <div class="phone-bottom-nav">
+                      <div class="pbn-item active">🏠<br><small>Home</small></div>
+                      <div class="pbn-item">📊<br><small>Earnings</small></div>
+                      <div class="pbn-item pbn-center">📍</div>
+                      <div class="pbn-item">📋<br><small>Jobs</small></div>
+                      <div class="pbn-item">👤<br><small>Profile</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="preview-info">
+              <h3>Worker Dashboard</h3>
+              <p>Manage your work effortlessly. Toggle online, track earnings, accept or decline jobs, and build your
+                reputation with ratings.</p>
+              <ul class="preview-features-list">
+                <li>🟢 Online/Offline toggle</li>
+                <li>💰 Real-time earnings tracker</li>
+                <li>📋 Incoming job requests</li>
+                <li>📊 Performance analytics</li>
+                <li>⭐ Reputation management</li>
+              </ul>
+            </div>
+          </div>
+          <!-- Admin Panel -->
+          <div class="preview-panel" data-tab-content="admin">
+            <div class="preview-device">
+              <div class="phone-frame" style="width: 420px; border-radius: 24px;">
+                <div class="phone-screen" style="border-radius: 16px;">
+                  <div class="phone-ui phone-ui-admin">
+                    <div class="phone-statusbar">
+                      <span>Admin Panel</span>
+                      <span>🔔 ⚙️</span>
+                    </div>
+                    <div class="admin-kpi-grid">
+                      <div class="admin-kpi">
+                        <div class="ak-value">12.5K</div>
+                        <div class="ak-label">Total Users</div>
+                      </div>
+                      <div class="admin-kpi">
+                        <div class="ak-value">1.8K</div>
+                        <div class="ak-label">Workers</div>
+                      </div>
+                      <div class="admin-kpi">
+                        <div class="ak-value">₹8.2L</div>
+                        <div class="ak-label">Revenue</div>
+                      </div>
+                      <div class="admin-kpi">
+                        <div class="ak-value">98%</div>
+                        <div class="ak-label">Satisfaction</div>
+                      </div>
+                    </div>
+                    <div class="phone-section-title">Pending Verifications</div>
+                    <div class="admin-table">
+                      <div class="at-row at-header">
+                        <span>Name</span><span>Type</span><span>Action</span>
+                      </div>
+                      <div class="at-row">
+                        <span>Ravi S.</span><span>ID</span><span class="at-approve">Approve</span>
+                      </div>
+                      <div class="at-row">
+                        <span>Meena P.</span><span>Skill</span><span class="at-approve">Approve</span>
+                      </div>
+                      <div class="at-row">
+                        <span>Kumar R.</span><span>ID</span><span class="at-review">Review</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="preview-info">
+              <h3>Admin Panel</h3>
+              <p>Full control over the platform. Manage users, verify workers, handle disputes, track revenue, and
+                monitor operations.</p>
+              <ul class="preview-features-list">
+                <li>📊 KPI dashboard</li>
+                <li>✅ Worker verification (KYC)</li>
+                <li>📋 Booking management</li>
+                <li>💰 Revenue tracking</li>
+                <li>⚖️ Dispute resolution</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal">🎯 How It Works</div>
+        <h2 class="reveal reveal-delay-1">Get Started in 4 Simple Steps</h2>
+        <p class="reveal reveal-delay-2">From search to service — it's fast, simple, and designed for everyone.</p>
+      </div>
+      <div class="how-it-works-steps">
+        <div class="hiw-step">
+          <div class="hiw-num">1</div>
+          <div class="hiw-icon">🔍</div>
+          <h4>Search & Select</h4>
+          <p>Browse service categories or search for what you need. Pick from verified workers near you.</p>
+        </div>
+        <div class="hiw-connector"></div>
+        <div class="hiw-step">
+          <div class="hiw-num">2</div>
+          <div class="hiw-icon">📝</div>
+          <h4>Describe & Book</h4>
+          <p>Tell us your problem, set your budget, choose a date — and submit your booking request.</p>
+        </div>
+        <div class="hiw-connector"></div>
+        <div class="hiw-step">
+          <div class="hiw-num">3</div>
+          <div class="hiw-icon">📍</div>
+          <h4>Track in Real-Time</h4>
+          <p>Track your matched worker live on GPS from the moment they accept until job completion.</p>
+        </div>
+        <div class="hiw-connector"></div>
+        <div class="hiw-step">
+          <div class="hiw-num">4</div>
+          <div class="hiw-icon">⭐</div>
+          <h4>Pay & Review</h4>
+          <p>Pay securely through the app. Rate your experience and help others find great workers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS BAR ===== -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <div class="counter-value" data-target="50000" data-suffix="+">0</div>
+          <div class="stat-label">Jobs Completed</div>
+        </div>
+        <div class="stat-item reveal reveal-delay-1">
+          <div class="counter-value" data-target="1500" data-suffix="+">0</div>
+          <div class="stat-label">Active Workers</div>
+        </div>
+        <div class="stat-item reveal reveal-delay-2">
+          <div class="counter-value" data-target="12000" data-suffix="+">0</div>
+          <div class="stat-label">Happy Users</div>
+        </div>
+        <div class="stat-item reveal reveal-delay-3">
+          <div class="counter-value" data-target="98" data-suffix="%" data-prefix="">0</div>
+          <div class="stat-label">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal">💬 Testimonials</div>
+        <h2 class="reveal reveal-delay-1">What Our Users Say</h2>
+        <p class="reveal reveal-delay-2">Real stories from real people who found the help they needed.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="tc-stars">⭐⭐⭐⭐⭐</div>
+          <p class="tc-quote">"Found a plumber in 10 minutes. He arrived on time, fixed the leak, and the pricing was
+            totally transparent. Life saver!"</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background: #7C3AED;">P</div>
+            <div>
+              <div class="tc-name">Pranay K.</div>
+              <div class="tc-role">Homeowner, Hyderabad</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="tc-stars">⭐⭐⭐⭐⭐</div>
+          <p class="tc-quote">"As a freelance electrician, this app changed my life. I get consistent work, fair pay,
+            and I can manage everything from my phone."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background: #4F46E5;">S</div>
+            <div>
+              <div class="tc-name">Suresh M.</div>
+              <div class="tc-role">Electrician, Bangalore</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="tc-stars">⭐⭐⭐⭐⭐</div>
+          <p class="tc-quote">"Hired a full-time cook through the monthly hiring feature. The verification process made
+            me feel safe and confident."</p>
+          <div class="tc-author">
+            <div class="tc-avatar" style="background: #6366F1;">R</div>
+            <div>
+              <div class="tc-name">Rina D.</div>
+              <div class="tc-role">Business Owner, Mumbai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA SECTION ===== -->
+  <section class="cta" id="cta">
+    <div class="container">
+      <div class="cta-content reveal">
+        <h2 data-i18n="cta_heading">Building the Future of Local Work & Employment</h2>
+        <p data-i18n="cta_sub">Join thousands of workers and businesses already connected on our platform.</p>
+        <div class="cta-buttons">
+          <a href="#" class="btn btn-primary btn-lg" data-i18n="cta_join">Join Now</a>
+          <a href="/pages/need-worker.html" class="btn btn-outline-white btn-lg" data-i18n="cta_hire">Hire Workers</a>
+          <a href="/pages/need-work.html" class="btn btn-outline-white btn-lg" data-i18n="cta_work">Find Work</a>
+        </div>
+      </div>
+    </div>
+    <div class="cta-bg-glow"></div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="color: white;">
+            <div class="nav-logo-icon">L</div>
+            LocalServe
+          </a>
+          <p data-i18n="footer_desc">Connecting people, skills & opportunities in real time. The future of local
+            services is here.</p>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_platform">Platform</h4>
+          <a href="/pages/need-worker.html" data-i18n="srv1_title">Need a Worker</a>
+          <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
+          <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
+          <a href="/pages/find-job.html" data-i18n="srv4_title">Find a Job</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_company">Company</h4>
+          <a href="#" data-i18n="footer_about">About Us</a>
+          <a href="#" data-i18n="footer_careers">Careers</a>
+          <a href="#" data-i18n="footer_blog">Blog</a>
+          <a href="#" data-i18n="footer_press">Press</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_support">Support</h4>
+          <a href="#" data-i18n="footer_help">Help Center</a>
+          <a href="#" data-i18n="footer_safety">Safety</a>
+          <a href="#" data-i18n="footer_terms">Terms of Service</a>
+          <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
+        <div class="footer-socials">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="Instagram">📸</a>
+          <a href="#" aria-label="YouTube">▶</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

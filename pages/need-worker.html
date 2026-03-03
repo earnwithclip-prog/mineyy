@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book a Worker — LocalServe</title>
+    <meta name="description"
+        content="Book skilled workers for plumbing, electrical, cleaning, carpentry and more. Verified professionals near you." />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
+    <link rel="stylesheet" href="/styles/variables.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <script type="module" src="/js/main.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">L</div>LocalServe
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/pages/need-worker.html" class="active-link" data-i18n="srv1_title">Need a Worker</a>
+                <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
+                <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
+                <a href="/pages/find-job.html" data-i18n="srv4_title">Find a Job</a>
+            </div>
+            <div class="nav-right">
+                <div class="lang-switcher">
+                    <button class="lang-btn">🌐 English ▾</button>
+                    <div class="lang-dropdown">
+                        <div class="lang-option active" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div>
+                        <div class="lang-option" data-lang="te">🇮🇳 తెలుగు</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Home</a> <span>/</span> <span data-i18n="srv1_title">Need a Worker</span>
+            </div>
+            <h1 data-i18n="nw_heading">Book a Skilled Worker</h1>
+            <p data-i18n="nw_sub">Select a service, describe your need, and get matched with verified workers near you.
+            </p>
+        </div>
+    </div>
+
+    <!-- Booking Flow -->
+    <section class="booking-section">
+        <div class="container">
+            <!-- Progress Steps -->
+            <div class="progress-steps reveal">
+                <div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label"
+                        data-i18n="nw_step1">Select Service</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2"><span class="step-num">2</span><span class="step-label"
+                        data-i18n="nw_step2">Describe Problem</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3"><span class="step-num">3</span><span class="step-label"
+                        data-i18n="nw_step3">Choose Date & Time</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="4"><span class="step-num">4</span><span class="step-label"
+                        data-i18n="nw_step4">Set Budget</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="5"><span class="step-num">5</span><span class="step-label"
+                        data-i18n="nw_step5">Confirm Booking</span></div>
+            </div>
+
+            <div class="booking-layout">
+                <!-- Left: Form -->
+                <div class="booking-form">
+                    <!-- Step 1: Categories -->
+                    <div class="booking-step active" id="step1">
+                        <h3 data-i18n="nw_step1">Select Service</h3>
+                        <div class="category-grid reveal">
+                            <div class="category-card" data-category="plumber">
+                                <div class="category-icon">🔧</div>
+                                <div class="category-name" data-i18n="nw_cat_plumber">Plumber</div>
+                            </div>
+                            <div class="category-card" data-category="electrician">
+                                <div class="category-icon">⚡</div>
+                                <div class="category-name" data-i18n="nw_cat_electrician">Electrician</div>
+                            </div>
+                            <div class="category-card" data-category="cleaner">
+                                <div class="category-icon">🧹</div>
+                                <div class="category-name" data-i18n="nw_cat_cleaner">Cleaner</div>
+                            </div>
+                            <div class="category-card" data-category="ac">
+                                <div class="category-icon">❄️</div>
+                                <div class="category-name" data-i18n="nw_cat_ac">AC Repair</div>
+                            </div>
+                            <div class="category-card" data-category="carpenter">
+                                <div class="category-icon">🪚</div>
+                                <div class="category-name" data-i18n="nw_cat_carpenter">Carpenter</div>
+                            </div>
+                            <div class="category-card" data-category="painter">
+                                <div class="category-icon">🎨</div>
+                                <div class="category-name" data-i18n="nw_cat_painter">Painter</div>
+                            </div>
+                            <div class="category-card" data-category="mechanic">
+                                <div class="category-icon">🔩</div>
+                                <div class="category-name" data-i18n="nw_cat_mechanic">Mechanic</div>
+                            </div>
+                            <div class="category-card" data-category="other">
+                                <div class="category-icon">📦</div>
+                                <div class="category-name" data-i18n="nw_cat_other">Other</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Describe -->
+                    <div class="booking-step" id="step2">
+                        <h3 data-i18n="nw_step2">Describe Problem</h3>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="nw_desc_label">Describe your problem</label>
+                            <textarea class="form-input" data-i18n="nw_desc_placeholder"
+                                placeholder="Tell us what you need help with..." rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="nw_upload">Upload Photos (Optional)</label>
+                            <div class="upload-area">
+                                <div class="upload-icon">📷</div>
+                                <span>Click or drag to upload</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Date & Time -->
+                    <div class="booking-step" id="step3">
+                        <h3 data-i18n="nw_step3">Choose Date & Time</h3>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="nw_date">Preferred Date</label>
+                                <input type="date" class="form-input" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="nw_time">Preferred Time</label>
+                                <input type="time" class="form-input" />
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-top: var(--space-md);">
+                            <span data-i18n="nw_location">📍 Auto-detect My Location</span>
+                        </button>
+                    </div>
+
+                    <!-- Step 4: Budget -->
+                    <div class="booking-step" id="step4">
+                        <h3 data-i18n="nw_step4">Set Budget</h3>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="nw_budget">Budget Range</label>
+                            <div class="budget-slider">
+                                <input type="range" min="100" max="5000" value="500" class="range-input"
+                                    id="budgetRange" />
+                                <div class="budget-display">
+                                    <span>₹100</span>
+                                    <span class="budget-value" id="budgetValue">₹500</span>
+                                    <span>₹5,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Confirm -->
+                    <div class="booking-step" id="step5">
+                        <h3 data-i18n="nw_step5">Confirm Booking</h3>
+                        <div class="booking-summary">
+                            <div class="summary-row"><span>Service</span><span id="summaryService">—</span></div>
+                            <div class="summary-row"><span>Date</span><span id="summaryDate">—</span></div>
+                            <div class="summary-row"><span>Budget</span><span id="summaryBudget">₹500</span></div>
+                            <div class="summary-row"><span>Location</span><span>Auto-detected</span></div>
+                        </div>
+                        <button class="btn btn-primary btn-lg" style="width:100; margin-top: var(--space-xl);"
+                            data-i18n="nw_book">Book Worker →</button>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="step-nav">
+                        <button class="btn btn-secondary step-prev" id="prevBtn" style="display:none;">← Back</button>
+                        <button class="btn btn-primary step-next" id="nextBtn">Next →</button>
+                    </div>
+                </div>
+
+                <!-- Right: Nearby Workers -->
+                <div class="booking-sidebar reveal">
+                    <h3 data-i18n="nw_nearby">Nearby Available Workers</h3>
+                    <div class="sidebar-workers">
+                        <div class="worker-card">
+                            <div class="worker-avatar">R</div>
+                            <div class="worker-info">
+                                <div class="worker-name">Raju Kumar</div>
+                                <div class="worker-skill">Plumber · 5 yrs exp</div>
+                                <div class="worker-rating">⭐ 4.8 (234 reviews)</div>
+                            </div>
+                            <div class="worker-status"></div>
+                        </div>
+                        <div class="worker-card">
+                            <div class="worker-avatar" style="background: #4F46E5;">S</div>
+                            <div class="worker-info">
+                                <div class="worker-name">Suresh Reddy</div>
+                                <div class="worker-skill">Electrician · 8 yrs exp</div>
+                                <div class="worker-rating">⭐ 4.9 (312 reviews)</div>
+                            </div>
+                            <div class="worker-status"></div>
+                        </div>
+                        <div class="worker-card">
+                            <div class="worker-avatar" style="background: #6366F1;">A</div>
+                            <div class="worker-info">
+                                <div class="worker-name">Anita Sharma</div>
+                                <div class="worker-skill">Cleaner · 3 yrs exp</div>
+                                <div class="worker-rating">⭐ 4.7 (156 reviews)</div>
+                            </div>
+                            <div class="worker-status"></div>
+                        </div>
+                        <div class="worker-card">
+                            <div class="worker-avatar" style="background: #8B5CF6;">M</div>
+                            <div class="worker-info">
+                                <div class="worker-name">Mohan Das</div>
+                                <div class="worker-skill">AC Technician · 6 yrs exp</div>
+                                <div class="worker-rating">⭐ 4.6 (198 reviews)</div>
+                            </div>
+                            <div class="worker-status offline"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
+                <div class="footer-socials">
+                    <a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Booking flow step navigation
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showStep(n) {
+            document.querySelectorAll('.booking-step').forEach((s, i) => {
+                s.classList.toggle('active', i + 1 === n);
+            });
+            document.querySelectorAll('.progress-steps .step').forEach((s, i) => {
+                s.classList.toggle('active', i + 1 <= n);
+            });
+            prevBtn.style.display = n === 1 ? 'none' : '';
+            nextBtn.textContent = n === totalSteps ? 'Confirm' : 'Next →';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
+        });
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) { currentStep--; showStep(currentStep); }
+        });
+
+        // Budget slider
+        const budgetRange = document.getElementById('budgetRange');
+        const budgetValue = document.getElementById('budgetValue');
+        if (budgetRange && budgetValue) {
+            budgetRange.addEventListener('input', () => {
+                budgetValue.textContent = '₹' + parseInt(budgetRange.value).toLocaleString();
+            });
+        }
+    </script>
+</body>
+
+</html>
