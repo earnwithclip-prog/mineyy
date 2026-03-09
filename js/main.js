@@ -1,6 +1,10 @@
 // ===== MAIN APPLICATION JS =====
 import { initI18n } from './i18n.js';
 import { initAnimations } from './animations.js';
+import { initAuth } from './auth.js';
+import { initChat } from './chat.js';
+import { initBookingPage, initWorkerDashboard } from './pages-booking.js';
+import { initHiringPage, initFindJobPage } from './pages-jobs.js';
 
 // ===== NAVBAR SCROLL =====
 function initNavbar() {
@@ -81,31 +85,34 @@ function initHoverEffects() {
     });
 }
 
-// ===== COUNTER ANIMATION =====
-function animateCounters() {
-    const counters = document.querySelectorAll('[data-count]');
+// ===== LANGUAGE DROPDOWN =====
+function initLangSwitcher() {
+    document.querySelectorAll('.lang-switcher').forEach(switcher => {
+        const btn = switcher.querySelector('.lang-btn');
+        const dropdown = switcher.querySelector('.lang-dropdown');
+        if (!btn || !dropdown) return;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = parseInt(entry.target.dataset.count);
-                const suffix = entry.target.dataset.suffix || '';
-                let current = 0;
-                const step = Math.ceil(target / 60);
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-                    entry.target.textContent = current.toLocaleString() + suffix;
-                }, 20);
-                observer.unobserve(entry.target);
-            }
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
         });
-    }, { threshold: 0.5 });
 
-    counters.forEach(el => observer.observe(el));
+        dropdown.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', () => {
+                dropdown.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                const flag = option.textContent.trim().split(' ')[0];
+                const name = option.textContent.trim().split(' ').slice(1).join(' ');
+                btn.textContent = `🌐 ${name} ▾`;
+                dropdown.classList.remove('open');
+            });
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
+    });
 }
 
 // ===== CATEGORY CARDS (for app pages) =====
@@ -155,10 +162,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
     initSmoothScroll();
     initHoverEffects();
-    animateCounters();
+    initLangSwitcher();
     initCategoryCards();
     initToggles();
     initTabs();
     initI18n();
     initAnimations();
+
+    // Backend modules
+    initAuth();
+    initChat();
+
+    // Page-specific initialization
+    const path = window.location.pathname;
+    if (path.includes('need-worker')) {
+        initBookingPage();
+    } else if (path.includes('need-work')) {
+        initWorkerDashboard();
+    } else if (path.includes('hire-monthly')) {
+        initHiringPage();
+    } else if (path.includes('find-job')) {
+        initFindJobPage();
+    }
 });

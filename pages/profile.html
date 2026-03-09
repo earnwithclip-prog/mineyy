@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile — LocalServe</title>
+    <meta name="description" content="View your profile, bookings, job applications, and activity on LocalServe." />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
+    <link rel="stylesheet" href="/styles/variables.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
+    <link rel="stylesheet" href="/styles/chat.css" />
+    <script type="module" src="/js/main.js"></script>
+    <style>
+        .profile-section {
+            padding: var(--space-3xl) 0;
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: var(--space-2xl);
+            align-items: start;
+        }
+
+        .profile-card {
+            text-align: center;
+            padding: var(--space-2xl);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto var(--space-lg);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .profile-email {
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+
+        .profile-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: var(--space-md);
+        }
+
+        .profile-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .profile-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .profile-content h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+        }
+
+        .activity-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+        }
+
+        .activity-tab {
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .activity-tab.active,
+        .activity-tab:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .activity-panel {
+            display: none;
+        }
+
+        .activity-panel.active {
+            display: block;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: white;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            margin-bottom: var(--space-md);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .activity-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(124, 58, 237, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .activity-info {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .activity-status {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-completed {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .not-signed-in {
+            text-align: center;
+            padding: var(--space-3xl);
+        }
+
+        .not-signed-in-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+        }
+
+        @media (max-width: 768px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">L</div>LocalServe
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/pages/need-worker.html" data-i18n="srv1_title">Need a Worker</a>
+                <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
+                <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
+                <a href="/pages/find-job.html" data-i18n="srv4_title">Find a Job</a>
+            </div>
+            <div class="nav-right">
+                <div class="lang-switcher">
+                    <button class="lang-btn">🌐 English ▾</button>
+                    <div class="lang-dropdown">
+                        <div class="lang-option active" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div>
+                        <div class="lang-option" data-lang="te">🇮🇳 తెలుగు</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span>My Profile</span></div>
+            <h1>My Profile</h1>
+            <p>View your activity, bookings, and job applications.</p>
+        </div>
+    </div>
+
+    <!-- Not signed in state -->
+    <section class="profile-section" id="profileNotSignedIn">
+        <div class="container">
+            <div class="not-signed-in card">
+                <div class="not-signed-in-icon">🔐</div>
+                <h3>Sign in to view your profile</h3>
+                <p style="color: var(--text-muted); margin-bottom: var(--space-xl);">Connect with workers, post jobs,
+                    and manage your activity.</p>
+                <button class="btn btn-primary btn-lg profile-sign-in-btn">👤 Sign in with Google</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Signed in state -->
+    <section class="profile-section" id="profileSignedIn" style="display: none;">
+        <div class="container">
+            <div class="profile-layout">
+                <!-- Left: Profile Card -->
+                <div class="profile-card card">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-name" id="profileName">User</div>
+                    <div class="profile-email" id="profileEmail">user@example.com</div>
+                    <div class="profile-role">✅ Verified User</div>
+                    <div class="profile-stats-row">
+                        <div>
+                            <div class="profile-stat-value" id="profileBookings">0</div>
+                            <div class="profile-stat-label">Bookings</div>
+                        </div>
+                        <div>
+                            <div class="profile-stat-value" id="profileJobs">0</div>
+                            <div class="profile-stat-label">Applications</div>
+                        </div>
+                        <div>
+                            <div class="profile-stat-value" id="profilePosted">0</div>
+                            <div class="profile-stat-label">Jobs Posted</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Activity -->
+                <div class="profile-content">
+                    <h3>My Activity</h3>
+                    <div class="activity-tabs" data-tab-group="activity">
+                        <div class="activity-tab active" data-activity-tab="bookings">📋 My Bookings</div>
+                        <div class="activity-tab" data-activity-tab="applications">💼 Applications</div>
+                        <div class="activity-tab" data-activity-tab="posted">📢 Posted Jobs</div>
+                    </div>
+
+                    <div class="activity-panel active" id="bookingsPanel">
+                        <div class="activity-placeholder card" style="text-align: center; padding: var(--space-2xl);">
+                            <div style="font-size: 48px; margin-bottom: var(--space-md);">📋</div>
+                            <p style="color: var(--text-muted);">Your bookings will appear here.</p>
+                        </div>
+                    </div>
+                    <div class="activity-panel" id="applicationsPanel">
+                        <div class="activity-placeholder card" style="text-align: center; padding: var(--space-2xl);">
+                            <div style="font-size: 48px; margin-bottom: var(--space-md);">💼</div>
+                            <p style="color: var(--text-muted);">Your job applications will appear here.</p>
+                        </div>
+                    </div>
+                    <div class="activity-panel" id="postedPanel">
+                        <div class="activity-placeholder card" style="text-align: center; padding: var(--space-2xl);">
+                            <div style="font-size: 48px; margin-bottom: var(--space-md);">📢</div>
+                            <p style="color: var(--text-muted);">Your posted jobs will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
+                <div class="footer-socials"><a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { loginWithGoogle, onAuthChange } from '/js/firebase.js';
+        import { db } from '/js/firebase.js';
+        import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+
+        const signedInSection = document.getElementById('profileSignedIn');
+        const notSignedInSection = document.getElementById('profileNotSignedIn');
+
+        // Sign in button
+        document.querySelector('.profile-sign-in-btn')?.addEventListener('click', async () => {
+            try {
+                await loginWithGoogle();
+            } catch (e) {
+                if (e.code !== 'auth/popup-closed-by-user') {
+                    alert('Sign-in failed. Please try again.');
+                }
+            }
+        });
+
+        // Activity tabs
+        document.querySelectorAll('.activity-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.activity-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.activity-panel').forEach(p => p.classList.remove('active'));
+                const target = tab.dataset.activityTab;
+                document.getElementById(target + 'Panel')?.classList.add('active');
+            });
+        });
+
+        const categoryIcons = {
+            plumber: '🔧', electrician: '⚡', cleaner: '🧹',
+            ac: '❄️', carpenter: '🪚', painter: '🎨',
+            mechanic: '🔩', other: '📦'
+        };
+
+        const statusClass = {
+            pending: 'status-pending',
+            accepted: 'status-accepted',
+            completed: 'status-completed'
+        };
+
+        function timeAgo(date) {
+            if (!date) return '';
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hrs ago';
+            return Math.floor(seconds / 86400) + ' days ago';
+        }
+
+        function capitalize(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+
+        function formatSalary(n) {
+            if (!n) return '0';
+            if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+            return n.toString();
+        }
+
+        onAuthChange((user) => {
+            if (user) {
+                notSignedInSection.style.display = 'none';
+                signedInSection.style.display = '';
+
+                // Update profile card
+                document.getElementById('profileName').textContent = user.displayName || 'User';
+                document.getElementById('profileEmail').textContent = user.email || '';
+                const avatar = document.getElementById('profileAvatar');
+                if (user.photoURL) {
+                    avatar.style.backgroundImage = `url(${user.photoURL})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.textContent = '';
+                } else {
+                    avatar.textContent = (user.displayName || 'U')[0].toUpperCase();
+                }
+
+                // Load my bookings
+                const bookingsQ = query(
+                    collection(db, 'bookings'),
+                    where('userId', '==', user.uid),
+                    orderBy('createdAt', 'desc')
+                );
+                onSnapshot(bookingsQ, (snap) => {
+                    document.getElementById('profileBookings').textContent = snap.size;
+                    const panel = document.getElementById('bookingsPanel');
+                    if (snap.empty) {
+                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📋</div><p style="color:var(--text-muted)">No bookings yet. <a href="/pages/need-worker.html" style="color:var(--primary)">Book a worker →</a></p></div>`;
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(docSnap => {
+                        const b = docSnap.data();
+                        html += `<div class="activity-item">
+                            <div class="activity-icon">${categoryIcons[b.category] || '📋'}</div>
+                            <div class="activity-info">
+                                <div class="activity-title">${capitalize(b.category)} Service</div>
+                                <div class="activity-meta">₹${b.budget?.toLocaleString() || '—'} · ${timeAgo(b.createdAt?.toDate?.())}</div>
+                            </div>
+                            <span class="activity-status ${statusClass[b.status] || 'status-pending'}">${capitalize(b.status)}</span>
+                        </div>`;
+                    });
+                    panel.innerHTML = html;
+                });
+
+                // Load my posted jobs
+                const jobsQ = query(
+                    collection(db, 'jobs'),
+                    where('employerId', '==', user.uid),
+                    orderBy('createdAt', 'desc')
+                );
+                onSnapshot(jobsQ, (snap) => {
+                    document.getElementById('profilePosted').textContent = snap.size;
+                    const panel = document.getElementById('postedPanel');
+                    if (snap.empty) {
+                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📢</div><p style="color:var(--text-muted)">No jobs posted. <a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job →</a></p></div>`;
+                        return;
+                    }
+                    let html = '';
+                    snap.forEach(docSnap => {
+                        const j = docSnap.data();
+                        html += `<div class="activity-item">
+                            <div class="activity-icon">💼</div>
+                            <div class="activity-info">
+                                <div class="activity-title">${j.title}</div>
+                                <div class="activity-meta">₹${formatSalary(j.salaryMin)} - ₹${formatSalary(j.salaryMax)}/mo · ${j.location || 'Remote'}</div>
+                            </div>
+                            <span class="activity-status ${j.status === 'active' ? 'status-accepted' : 'status-completed'}">${capitalize(j.status)}</span>
+                        </div>`;
+                    });
+                    panel.innerHTML = html;
+                });
+
+                // Applications count (simplified)
+                document.getElementById('profileJobs').textContent = '—';
+
+            } else {
+                notSignedInSection.style.display = '';
+                signedInSection.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

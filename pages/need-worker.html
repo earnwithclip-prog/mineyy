@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/components.css" />
     <link rel="stylesheet" href="/styles/pages.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
+    <link rel="stylesheet" href="/styles/chat.css" />
     <script type="module" src="/js/main.js"></script>
 </head>
 
@@ -181,8 +183,8 @@
                             <div class="summary-row"><span>Budget</span><span id="summaryBudget">₹500</span></div>
                             <div class="summary-row"><span>Location</span><span>Auto-detected</span></div>
                         </div>
-                        <button class="btn btn-primary btn-lg" style="width:100; margin-top: var(--space-xl);"
-                            data-i18n="nw_book">Book Worker →</button>
+                        <button class="btn btn-primary btn-lg booking-submit-btn"
+                            style="width:100%; margin-top: var(--space-xl);" data-i18n="nw_book">Book Worker →</button>
                     </div>
 
                     <!-- Navigation Buttons -->
@@ -251,9 +253,13 @@
     </footer>
 
     <script type="module">
+        import { createBooking } from '/js/booking.js';
+        import { requireAuth } from '/js/auth.js';
+
         // Booking flow step navigation
         let currentStep = 1;
         const totalSteps = 5;
+        let selectedCategory = '';
 
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -266,10 +272,43 @@
                 s.classList.toggle('active', i + 1 <= n);
             });
             prevBtn.style.display = n === 1 ? 'none' : '';
-            nextBtn.textContent = n === totalSteps ? 'Confirm' : 'Next →';
+            nextBtn.style.display = n === totalSteps ? 'none' : '';
+
+            // Populate summary at step 5
+            if (n === totalSteps) {
+                document.getElementById('summaryService').textContent = selectedCategory || '—';
+                const dateInput = document.querySelector('#step3 input[type="date"]');
+                const timeInput = document.querySelector('#step3 input[type="time"]');
+                const dateVal = dateInput?.value;
+                const timeVal = timeInput?.value;
+                let dateStr = '—';
+                if (dateVal) {
+                    const d = new Date(dateVal + (timeVal ? 'T' + timeVal : ''));
+                    dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                    if (timeVal) dateStr += ' at ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                }
+                document.getElementById('summaryDate').textContent = dateStr;
+                document.getElementById('summaryBudget').textContent = '₹' + parseInt(budgetRange.value).toLocaleString();
+            }
         }
 
+        // Category card selection
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                selectedCategory = card.querySelector('.category-name')?.textContent || card.dataset.category || '';
+            });
+        });
+
         nextBtn.addEventListener('click', () => {
+            // Validate: must select a category at step 1
+            if (currentStep === 1 && !selectedCategory) {
+                const cards = document.querySelector('.category-grid');
+                cards.style.animation = 'shake 0.3s';
+                setTimeout(() => cards.style.animation = '', 300);
+                return;
+            }
             if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
         });
         prevBtn.addEventListener('click', () => {
@@ -282,6 +321,45 @@
         if (budgetRange && budgetValue) {
             budgetRange.addEventListener('input', () => {
                 budgetValue.textContent = '₹' + parseInt(budgetRange.value).toLocaleString();
+            });
+        }
+
+        // Book Worker submit (Step 5 confirm button)
+        const submitBtn = document.querySelector('.booking-submit-btn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                const user = requireAuth();
+                if (!user) return;
+
+                const category = document.querySelector('.category-card.active')?.dataset?.category || selectedCategory.toLowerCase();
+                const description = document.querySelector('#step2 textarea')?.value || '';
+                const budget = budgetRange?.value || '500';
+                const date = document.querySelector('#step3 input[type="date"]')?.value || '';
+                const time = document.querySelector('#step3 input[type="time"]')?.value || '';
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+
+                const bookingId = await createBooking({ category, description, budget, date, time });
+
+                if (bookingId) {
+                    submitBtn.textContent = '✅ Booked Successfully!';
+                    submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    setTimeout(() => {
+                        currentStep = 1;
+                        selectedCategory = '';
+                        document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+                        showStep(1);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Book Worker →';
+                        submitBtn.style.background = '';
+                    }, 3000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Book Worker →';
+                }
             });
         }
     </script>
