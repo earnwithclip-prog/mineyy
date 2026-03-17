@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="/styles/auth.css" />
   <link rel="stylesheet" href="/styles/chat.css" />
   <link rel="stylesheet" href="/styles/landing.css" />
+  <link rel="stylesheet" href="/styles/map.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="/js/main.js"></script>
 </head>
 
@@ -56,7 +59,7 @@
       <div class="hero-grid">
         <div class="hero-content">
           <div class="hero-pill reveal">
-            <span>🚀</span> The #1 Local Services Platform
+            <span>🚀</span> <span data-i18n="hero_pill">The #1 Local Services Platform</span>
           </div>
           <h1 class="hero-heading reveal reveal-delay-1" data-i18n="hero_heading">
             THE FUTURE OF LOCAL SERVICES & JOBS.
@@ -79,7 +82,7 @@
               <div class="trust-avatar" style="background: #6366F1;">A</div>
               <div class="trust-avatar" style="background: #8B5CF6;">M</div>
             </div>
-            <span>Trusted by <strong>10,000+</strong> users</span>
+            <span data-i18n="hero_trusted">Trusted by <strong>10,000+</strong> users</span>
           </div>
         </div>
         <div class="hero-visual reveal">
@@ -419,37 +422,42 @@
   <section class="how-it-works" id="how-it-works">
     <div class="container">
       <div class="section-header">
-        <div class="section-pill reveal">🎯 How It Works</div>
-        <h2 class="reveal reveal-delay-1">Get Started in 4 Simple Steps</h2>
-        <p class="reveal reveal-delay-2">From search to service — it's fast, simple, and designed for everyone.</p>
+        <div class="section-pill reveal" data-i18n="hiw_pill">🎯 How It Works</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="hiw_heading">Get Started in 4 Simple Steps</h2>
+        <p class="reveal reveal-delay-2" data-i18n="hiw_sub">From search to service — it's fast, simple, and designed
+          for everyone.</p>
       </div>
       <div class="how-it-works-steps">
         <div class="hiw-step">
           <div class="hiw-num">1</div>
           <div class="hiw-icon">🔍</div>
-          <h4>Search & Select</h4>
-          <p>Browse service categories or search for what you need. Pick from verified workers near you.</p>
+          <h4 data-i18n="hiw1_title">Search & Select</h4>
+          <p data-i18n="hiw1_desc">Browse service categories or search for what you need. Pick from verified workers
+            near you.</p>
         </div>
         <div class="hiw-connector"></div>
         <div class="hiw-step">
           <div class="hiw-num">2</div>
           <div class="hiw-icon">📝</div>
-          <h4>Describe & Book</h4>
-          <p>Tell us your problem, set your budget, choose a date — and submit your booking request.</p>
+          <h4 data-i18n="hiw2_title">Describe & Book</h4>
+          <p data-i18n="hiw2_desc">Tell us your problem, set your budget, choose a date — and submit your booking
+            request.</p>
         </div>
         <div class="hiw-connector"></div>
         <div class="hiw-step">
           <div class="hiw-num">3</div>
           <div class="hiw-icon">📍</div>
-          <h4>Track in Real-Time</h4>
-          <p>Track your matched worker live on GPS from the moment they accept until job completion.</p>
+          <h4 data-i18n="hiw3_title">Track in Real-Time</h4>
+          <p data-i18n="hiw3_desc">Track your matched worker live on GPS from the moment they accept until job
+            completion.</p>
         </div>
         <div class="hiw-connector"></div>
         <div class="hiw-step">
           <div class="hiw-num">4</div>
           <div class="hiw-icon">⭐</div>
-          <h4>Pay & Review</h4>
-          <p>Pay securely through the app. Rate your experience and help others find great workers.</p>
+          <h4 data-i18n="hiw4_title">Pay & Review</h4>
+          <p data-i18n="hiw4_desc">Pay securely through the app. Rate your experience and help others find great
+            workers.</p>
         </div>
       </div>
     </div>
@@ -461,19 +469,19 @@
       <div class="stats-grid">
         <div class="stat-item reveal">
           <div class="counter-value" data-target="50000" data-suffix="+">0</div>
-          <div class="stat-label">Jobs Completed</div>
+          <div class="stat-label" data-i18n="stats_jobs">Jobs Completed</div>
         </div>
         <div class="stat-item reveal reveal-delay-1">
           <div class="counter-value" data-target="1500" data-suffix="+">0</div>
-          <div class="stat-label">Active Workers</div>
+          <div class="stat-label" data-i18n="stats_workers">Active Workers</div>
         </div>
         <div class="stat-item reveal reveal-delay-2">
           <div class="counter-value" data-target="12000" data-suffix="+">0</div>
-          <div class="stat-label">Happy Users</div>
+          <div class="stat-label" data-i18n="stats_users">Happy Users</div>
         </div>
         <div class="stat-item reveal reveal-delay-3">
           <div class="counter-value" data-target="98" data-suffix="%" data-prefix="">0</div>
-          <div class="stat-label">Satisfaction Rate</div>
+          <div class="stat-label" data-i18n="stats_satisfaction">Satisfaction Rate</div>
         </div>
       </div>
     </div>
@@ -483,46 +491,80 @@
   <section class="testimonials" id="testimonials">
     <div class="container">
       <div class="section-header">
-        <div class="section-pill reveal">💬 Testimonials</div>
-        <h2 class="reveal reveal-delay-1">What Our Users Say</h2>
-        <p class="reveal reveal-delay-2">Real stories from real people who found the help they needed.</p>
+        <div class="section-pill reveal" data-i18n="testimonials_pill">💬 Testimonials</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="testimonials_heading">What Our Users Say</h2>
+        <p class="reveal reveal-delay-2" data-i18n="testimonials_sub">Real stories from real people who found the help
+          they needed.</p>
       </div>
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <div class="tc-stars">⭐⭐⭐⭐⭐</div>
-          <p class="tc-quote">"Found a plumber in 10 minutes. He arrived on time, fixed the leak, and the pricing was
+          <p class="tc-quote" data-i18n="test1_quote">"Found a plumber in 10 minutes. He arrived on time, fixed the
+            leak, and the pricing was
             totally transparent. Life saver!"</p>
           <div class="tc-author">
             <div class="tc-avatar" style="background: #7C3AED;">P</div>
             <div>
-              <div class="tc-name">Pranay K.</div>
-              <div class="tc-role">Homeowner, Hyderabad</div>
+              <div class="tc-name" data-i18n="test1_name">Pranay K.</div>
+              <div class="tc-role" data-i18n="test1_role">Homeowner, Hyderabad</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
           <div class="tc-stars">⭐⭐⭐⭐⭐</div>
-          <p class="tc-quote">"As a freelance electrician, this app changed my life. I get consistent work, fair pay,
+          <p class="tc-quote" data-i18n="test2_quote">"As a freelance electrician, this app changed my life. I get
+            consistent work, fair pay,
             and I can manage everything from my phone."</p>
           <div class="tc-author">
             <div class="tc-avatar" style="background: #4F46E5;">S</div>
             <div>
-              <div class="tc-name">Suresh M.</div>
-              <div class="tc-role">Electrician, Bangalore</div>
+              <div class="tc-name" data-i18n="test2_name">Suresh M.</div>
+              <div class="tc-role" data-i18n="test2_role">Electrician, Bangalore</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
           <div class="tc-stars">⭐⭐⭐⭐⭐</div>
-          <p class="tc-quote">"Hired a full-time cook through the monthly hiring feature. The verification process made
+          <p class="tc-quote" data-i18n="test3_quote">"Hired a full-time cook through the monthly hiring feature. The
+            verification process made
             me feel safe and confident."</p>
           <div class="tc-author">
             <div class="tc-avatar" style="background: #6366F1;">R</div>
             <div>
-              <div class="tc-name">Rina D.</div>
-              <div class="tc-role">Business Owner, Mumbai</div>
+              <div class="tc-name" data-i18n="test3_name">Rina D.</div>
+              <div class="tc-role" data-i18n="test3_role">Business Owner, Mumbai</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FIND WORKERS MAP SECTION ===== -->
+  <section class="map-section" id="map">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-pill reveal" data-i18n="map_pill">📍 Find Workers</div>
+        <h2 class="reveal reveal-delay-1" data-i18n="map_heading">Find Workers Near You</h2>
+        <p class="reveal reveal-delay-2" data-i18n="map_sub">Discover verified skilled workers available in your area right now.</p>
+      </div>
+      <div class="map-section-content reveal">
+        <div class="map-section-info">
+          <h3 data-i18n="map_info_title">Workers Ready to Help</h3>
+          <p data-i18n="map_info_desc">Our network of verified professionals is spread across your city. Detect your location to find the nearest available workers for any service you need.</p>
+          <ul class="map-feature-list">
+            <li>📍 Real-time worker locations</li>
+            <li>⚡ Instant booking from the map</li>
+            <li>🛡️ All workers are verified</li>
+            <li>📱 GPS tracking after booking</li>
+          </ul>
+          <button class="detect-location-btn" id="homeDetectBtn" type="button">
+            <span class="btn-spinner"></span>
+            📍 Detect My Location
+          </button>
+        </div>
+        <div class="map-section-map">
+          <div class="map-container" id="homeMap"></div>
         </div>
       </div>
     </div>
@@ -589,6 +631,79 @@
       </div>
     </div>
   </footer>
+
+  <!-- Homepage Map Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const mapEl = document.getElementById('homeMap');
+      if (!mapEl || typeof L === 'undefined') return;
+
+      // Initialize map centered on Hyderabad
+      const homeMap = L.map('homeMap').setView([17.385, 78.4867], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(homeMap);
+
+      // Sample worker locations around Hyderabad
+      const workers = [
+        { lat: 17.390, lng: 78.480, name: 'Raju K.', skill: 'Plumber · ⭐ 4.8', icon: '🔧' },
+        { lat: 17.375, lng: 78.495, name: 'Suresh M.', skill: 'Electrician · ⭐ 4.9', icon: '⚡' },
+        { lat: 17.395, lng: 78.470, name: 'Anita S.', skill: 'Cleaner · ⭐ 4.7', icon: '🧹' },
+        { lat: 17.380, lng: 78.500, name: 'Mohan D.', skill: 'AC Tech · ⭐ 4.6', icon: '❄️' },
+        { lat: 17.400, lng: 78.490, name: 'Lakshmi R.', skill: 'Painter · ⭐ 4.8', icon: '🎨' },
+        { lat: 17.370, lng: 78.475, name: 'Kumar V.', skill: 'Carpenter · ⭐ 4.5', icon: '🪚' },
+      ];
+
+      workers.forEach(w => {
+        const workerIcon = L.divIcon({
+          className: '',
+          html: `<div style="width:36px;height:36px;background:linear-gradient(135deg,#7C3AED,#4F46E5);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 4px 12px rgba(124,58,237,0.4);font-size:16px;">${w.icon}</div>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+          popupAnchor: [0, -20]
+        });
+
+        L.marker([w.lat, w.lng], { icon: workerIcon })
+          .addTo(homeMap)
+          .bindPopup(`<div class="popup-worker-name">${w.name}</div><div class="popup-worker-skill">${w.skill}</div>`);
+      });
+
+      // Detect My Location button
+      const detectBtn = document.getElementById('homeDetectBtn');
+      if (detectBtn) {
+        detectBtn.addEventListener('click', function() {
+          detectBtn.classList.add('loading');
+
+          if (!navigator.geolocation) {
+            alert('Geolocation is not supported.');
+            detectBtn.classList.remove('loading');
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            function(pos) {
+              homeMap.setView([pos.coords.latitude, pos.coords.longitude], 14);
+              L.marker([pos.coords.latitude, pos.coords.longitude])
+                .addTo(homeMap)
+                .bindPopup('📍 You are here')
+                .openPopup();
+              detectBtn.classList.remove('loading');
+              detectBtn.innerHTML = '✅ Location Detected';
+            },
+            function() {
+              detectBtn.classList.remove('loading');
+              alert('Could not detect your location.');
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        });
+      }
+
+      // Fix map rendering
+      setTimeout(function() { homeMap.invalidateSize(); }, 200);
+    });
+  </script>
 
 </body>
 

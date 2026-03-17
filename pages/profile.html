@@ -223,7 +223,7 @@
                 <div class="nav-logo-icon">L</div>LocalServe
             </a>
             <div class="nav-links">
-                <a href="/">Home</a>
+                <a href="/" data-i18n="nav_home">Home</a>
                 <a href="/pages/need-worker.html" data-i18n="srv1_title">Need a Worker</a>
                 <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
                 <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
@@ -333,9 +333,8 @@
     </footer>
 
     <script type="module">
-        import { loginWithGoogle, onAuthChange } from '/js/firebase.js';
-        import { db } from '/js/firebase.js';
-        import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+        import { onAuthChange, loginWithGoogle } from '/js/firebase.js';
+        import { apiGetMyBookings, apiGetMyJobs } from '/js/api.js';
 
         const signedInSection = document.getElementById('profileSignedIn');
         const notSignedInSection = document.getElementById('profileNotSignedIn');
@@ -345,9 +344,7 @@
             try {
                 await loginWithGoogle();
             } catch (e) {
-                if (e.code !== 'auth/popup-closed-by-user') {
-                    alert('Sign-in failed. Please try again.');
-                }
+                alert('Sign-in failed. Please try again.');
             }
         });
 
@@ -371,6 +368,7 @@
         const statusClass = {
             pending: 'status-pending',
             accepted: 'status-accepted',
+            confirmed: 'status-accepted',
             completed: 'status-completed'
         };
 
@@ -393,13 +391,13 @@
             return n.toString();
         }
 
-        onAuthChange((user) => {
+        onAuthChange(async (user) => {
             if (user) {
                 notSignedInSection.style.display = 'none';
                 signedInSection.style.display = '';
 
                 // Update profile card
-                document.getElementById('profileName').textContent = user.displayName || 'User';
+                document.getElementById('profileName').textContent = user.name || user.displayName || 'User';
                 document.getElementById('profileEmail').textContent = user.email || '';
                 const avatar = document.getElementById('profileAvatar');
                 if (user.photoURL) {
@@ -407,66 +405,54 @@
                     avatar.style.backgroundSize = 'cover';
                     avatar.textContent = '';
                 } else {
-                    avatar.textContent = (user.displayName || 'U')[0].toUpperCase();
+                    avatar.textContent = (user.name || 'U')[0].toUpperCase();
                 }
 
-                // Load my bookings
-                const bookingsQ = query(
-                    collection(db, 'bookings'),
-                    where('userId', '==', user.uid),
-                    orderBy('createdAt', 'desc')
-                );
-                onSnapshot(bookingsQ, (snap) => {
-                    document.getElementById('profileBookings').textContent = snap.size;
+                // Load my bookings from API
+                try {
+                    const bookingsData = await apiGetMyBookings();
+                    const bookings = bookingsData.bookings || [];
+                    document.getElementById('profileBookings').textContent = bookings.length;
                     const panel = document.getElementById('bookingsPanel');
-                    if (snap.empty) {
+                    if (bookings.length === 0) {
                         panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📋</div><p style="color:var(--text-muted)">No bookings yet. <a href="/pages/need-worker.html" style="color:var(--primary)">Book a worker →</a></p></div>`;
-                        return;
-                    }
-                    let html = '';
-                    snap.forEach(docSnap => {
-                        const b = docSnap.data();
-                        html += `<div class="activity-item">
+                    } else {
+                        panel.innerHTML = bookings.map(b => `<div class="activity-item">
                             <div class="activity-icon">${categoryIcons[b.category] || '📋'}</div>
                             <div class="activity-info">
                                 <div class="activity-title">${capitalize(b.category)} Service</div>
-                                <div class="activity-meta">₹${b.budget?.toLocaleString() || '—'} · ${timeAgo(b.createdAt?.toDate?.())}</div>
+                                <div class="activity-meta">₹${b.budget?.toLocaleString() || '—'} · ${timeAgo(b.createdAt ? new Date(b.createdAt) : null)}</div>
                             </div>
                             <span class="activity-status ${statusClass[b.status] || 'status-pending'}">${capitalize(b.status)}</span>
-                        </div>`;
-                    });
-                    panel.innerHTML = html;
-                });
-
-                // Load my posted jobs
-                const jobsQ = query(
-                    collection(db, 'jobs'),
-                    where('employerId', '==', user.uid),
-                    orderBy('createdAt', 'desc')
-                );
-                onSnapshot(jobsQ, (snap) => {
-                    document.getElementById('profilePosted').textContent = snap.size;
-                    const panel = document.getElementById('postedPanel');
-                    if (snap.empty) {
-                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📢</div><p style="color:var(--text-muted)">No jobs posted. <a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job →</a></p></div>`;
-                        return;
+                        </div>`).join('');
                     }
-                    let html = '';
-                    snap.forEach(docSnap => {
-                        const j = docSnap.data();
-                        html += `<div class="activity-item">
+                } catch (e) {
+                    console.error('Load bookings error:', e);
+                }
+
+                // Load my posted jobs from API
+                try {
+                    const jobsData = await apiGetMyJobs();
+                    const jobs = jobsData.jobs || [];
+                    document.getElementById('profilePosted').textContent = jobs.length;
+                    const panel = document.getElementById('postedPanel');
+                    if (jobs.length === 0) {
+                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📢</div><p style="color:var(--text-muted)">No jobs posted. <a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job →</a></p></div>`;
+                    } else {
+                        panel.innerHTML = jobs.map(j => `<div class="activity-item">
                             <div class="activity-icon">💼</div>
                             <div class="activity-info">
                                 <div class="activity-title">${j.title}</div>
                                 <div class="activity-meta">₹${formatSalary(j.salaryMin)} - ₹${formatSalary(j.salaryMax)}/mo · ${j.location || 'Remote'}</div>
                             </div>
                             <span class="activity-status ${j.status === 'active' ? 'status-accepted' : 'status-completed'}">${capitalize(j.status)}</span>
-                        </div>`;
-                    });
-                    panel.innerHTML = html;
-                });
+                        </div>`).join('');
+                    }
+                } catch (e) {
+                    console.error('Load jobs error:', e);
+                }
 
-                // Applications count (simplified)
+                // Applications count
                 document.getElementById('profileJobs').textContent = '—';
 
             } else {

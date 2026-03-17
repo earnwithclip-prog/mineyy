@@ -1,9 +1,5 @@
-// ===== JOBS MODULE (Monthly Hiring) =====
-import { db } from './firebase.js';
-import {
-    collection, addDoc, doc, updateDoc, onSnapshot, deleteDoc,
-    query, where, orderBy, serverTimestamp, getDocs
-} from 'firebase/firestore';
+// ===== JOBS MODULE (Monthly Hiring) — Express/MongoDB backend =====
+import { apiPostJob, apiGetJobs, apiGetMyJobs, apiApplyToJob, apiGetApplications } from './api.js';
 import { requireAuth, showToast, getUser } from './auth.js';
 
 // ===== POST JOB (Hire Monthly page) =====
@@ -12,10 +8,7 @@ export async function postJob({ title, openings, hours, salaryMin, salaryMax, ex
     if (!user) return null;
 
     try {
-        const jobRef = await addDoc(collection(db, 'jobs'), {
-            employerId: user.uid,
-            employerName: user.displayName || 'Employer',
-            employerPhoto: user.photoURL || null,
+        const data = await apiPostJob({
             title,
             openings: parseInt(openings) || 1,
             hours: hours || 'Full Time (8 hrs)',
@@ -24,14 +17,11 @@ export async function postJob({ title, openings, hours, salaryMin, salaryMax, ex
             experience: experience || 'Fresher',
             benefits: benefits || [],
             location: location || '',
-            joinDate: joinDate || '',
-            status: 'active',
-            applicantCount: 0,
-            createdAt: serverTimestamp()
+            joinDate: joinDate || ''
         });
 
         showToast('✅ Job posted successfully!');
-        return jobRef.id;
+        return data.job?._id || true;
     } catch (error) {
         console.error('Post job error:', error);
         showToast('❌ Failed to post job.');
@@ -39,38 +29,56 @@ export async function postJob({ title, openings, hours, salaryMin, salaryMax, ex
     }
 }
 
-// ===== LISTEN FOR ALL ACTIVE JOBS (Find Job page) =====
-export function listenForJobs(callback) {
-    const q = query(
-        collection(db, 'jobs'),
-        where('status', '==', 'active'),
-        orderBy('createdAt', 'desc')
-    );
+// ===== FETCH ALL ACTIVE JOBS (Find Job page — polling) =====
+let jobPollTimer = null;
 
-    return onSnapshot(q, (snapshot) => {
-        const jobs = [];
-        snapshot.forEach(docSnap => {
-            jobs.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        callback(jobs);
-    });
+export function listenForJobs(callback) {
+    async function poll() {
+        try {
+            const data = await apiGetJobs();
+            const jobs = (data.jobs || []).map(j => ({
+                ...j,
+                id: j._id,
+                createdAt: j.createdAt ? { toDate: () => new Date(j.createdAt) } : null
+            }));
+            callback(jobs);
+        } catch (e) {
+            console.error('Jobs poll error:', e);
+        }
+    }
+
+    poll();
+    jobPollTimer = setInterval(poll, 15000); // poll every 15s
+
+    return () => {
+        if (jobPollTimer) clearInterval(jobPollTimer);
+    };
 }
 
-// ===== LISTEN FOR MY POSTED JOBS (Employer's sidebar) =====
-export function listenForMyJobs(employerId, callback) {
-    const q = query(
-        collection(db, 'jobs'),
-        where('employerId', '==', employerId),
-        orderBy('createdAt', 'desc')
-    );
+// ===== FETCH MY POSTED JOBS (Employer's sidebar — polling) =====
+let myJobPollTimer = null;
 
-    return onSnapshot(q, (snapshot) => {
-        const jobs = [];
-        snapshot.forEach(docSnap => {
-            jobs.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        callback(jobs);
-    });
+export function listenForMyJobs(employerId, callback) {
+    async function poll() {
+        try {
+            const data = await apiGetMyJobs();
+            const jobs = (data.jobs || []).map(j => ({
+                ...j,
+                id: j._id,
+                createdAt: j.createdAt ? { toDate: () => new Date(j.createdAt) } : null
+            }));
+            callback(jobs);
+        } catch (e) {
+            console.error('My jobs poll error:', e);
+        }
+    }
+
+    poll();
+    myJobPollTimer = setInterval(poll, 15000);
+
+    return () => {
+        if (myJobPollTimer) clearInterval(myJobPollTimer);
+    };
 }
 
 // ===== APPLY TO JOB (Find Job page) =====
@@ -79,63 +87,30 @@ export async function applyToJob(jobId, coverNote = '') {
     if (!user) return null;
 
     try {
-        // Check if already applied
-        const existingQ = query(
-            collection(db, 'jobs', jobId, 'applications'),
-            where('seekerId', '==', user.uid)
-        );
-        const existing = await getDocs(existingQ);
-        if (!existing.empty) {
-            showToast('⚠️ You already applied to this job.');
-            return null;
-        }
-
-        // Create application
-        await addDoc(collection(db, 'jobs', jobId, 'applications'), {
-            seekerId: user.uid,
-            seekerName: user.displayName || 'Applicant',
-            seekerEmail: user.email || '',
-            seekerPhoto: user.photoURL || null,
-            coverNote,
-            status: 'pending',
-            appliedAt: serverTimestamp()
-        });
-
-        // Create chat between applicant and employer
-        // First, get the job to find employer
-        const jobQuery = query(collection(db, 'jobs'), where('status', '==', 'active'));
-        // We already have jobId, so let's use the applications to trigger chat
-
-        const chatRef = await addDoc(collection(db, 'chats'), {
-            jobId,
-            participants: [user.uid],
-            type: 'job_application',
-            createdAt: serverTimestamp()
-        });
-
+        const data = await apiApplyToJob(jobId, coverNote);
         showToast('✅ Application submitted! You can now chat with the employer.');
-        return chatRef.id;
+        return data.chatId || null;
     } catch (error) {
         console.error('Apply error:', error);
-        showToast('❌ Failed to apply. Please try again.');
+        const msg = error.message || 'Failed to apply.';
+        showToast('❌ ' + msg);
         return null;
     }
 }
 
 // ===== LISTEN FOR APPLICATIONS (employer views) =====
 export function listenForApplications(jobId, callback) {
-    const q = query(
-        collection(db, 'jobs', jobId, 'applications'),
-        orderBy('appliedAt', 'desc')
-    );
-
-    return onSnapshot(q, (snapshot) => {
-        const apps = [];
-        snapshot.forEach(docSnap => {
-            apps.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        callback(apps);
-    });
+    async function fetch() {
+        try {
+            const data = await apiGetApplications(jobId);
+            callback(data.applications || []);
+        } catch (e) {
+            console.error('Applications error:', e);
+        }
+    }
+    fetch();
+    const timer = setInterval(fetch, 20000);
+    return () => clearInterval(timer);
 }
 
 // ===== RENDER JOBS (for find-job page) =====
@@ -147,7 +122,7 @@ export function renderJobs(jobs, container) {
             <div class="card" style="text-align:center; padding: 3rem;">
                 <div style="font-size: 48px; margin-bottom: 1rem;">📋</div>
                 <h4>No jobs posted yet</h4>
-                <p style="color: var(--text-muted);">New job listings will appear here in real-time.</p>
+                <p style="color: var(--text-muted);">New job listings will appear here.</p>
             </div>
         `;
         return;
@@ -229,18 +204,10 @@ export function renderMyJobs(jobs, container) {
                 <div class="job-meta-item">👤 ${job.openings} Opening${job.openings > 1 ? 's' : ''}</div>
             </div>
             <div class="job-applicants" style="margin-top: var(--space-md);">
-                <span class="pill pill-primary applicant-count" data-job-id="${job.id}">Loading...</span>
+                <span class="pill pill-primary">${job.applicantCount || 0} Application${job.applicantCount !== 1 ? 's' : ''}</span>
             </div>
         </div>
     `).join('');
-
-    // Load applicant counts
-    jobs.forEach(job => {
-        listenForApplications(job.id, (apps) => {
-            const countEl = container.querySelector(`.applicant-count[data-job-id="${job.id}"]`);
-            if (countEl) countEl.textContent = `${apps.length} Application${apps.length !== 1 ? 's' : ''}`;
-        });
-    });
 }
 
 // ===== HELPERS =====

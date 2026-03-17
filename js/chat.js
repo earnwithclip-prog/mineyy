@@ -1,13 +1,10 @@
-// ===== REAL-TIME CHAT MODULE =====
-import { db } from './firebase.js';
-import {
-    collection, addDoc, onSnapshot, query, orderBy,
-    serverTimestamp, doc, getDoc
-} from 'firebase/firestore';
+// ===== REAL-TIME CHAT MODULE — Express/MongoDB backend (polling) =====
+import { apiGetChat, apiGetMessages, apiSendMessage } from './api.js';
 import { getUser, requireAuth } from './auth.js';
 
 let activeChatId = null;
-let chatUnsubscribe = null;
+let chatPollTimer = null;
+let lastMessageTime = null;
 
 // ===== CREATE CHAT UI =====
 function createChatUI() {
@@ -64,6 +61,7 @@ function createChatUI() {
 export function openChat(chatId) {
     createChatUI();
     activeChatId = chatId;
+    lastMessageTime = null;
 
     const panel = document.getElementById('chatPanel');
     const fab = document.getElementById('chatFab');
@@ -74,39 +72,49 @@ export function openChat(chatId) {
     // Load chat info
     loadChatInfo(chatId);
 
-    // Listen for messages
-    if (chatUnsubscribe) chatUnsubscribe();
-
-    const messagesRef = collection(db, 'chats', chatId, 'messages');
-    const q = query(messagesRef, orderBy('timestamp', 'asc'));
-
-    chatUnsubscribe = onSnapshot(q, (snapshot) => {
-        const messages = [];
-        snapshot.forEach(docSnap => {
-            messages.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        renderMessages(messages);
-    });
+    // Start polling for messages
+    pollMessages();
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(pollMessages, 3000);
 }
 
 // ===== LOAD CHAT INFO =====
 async function loadChatInfo(chatId) {
     try {
-        const chatDoc = await getDoc(doc(db, 'chats', chatId));
-        if (chatDoc.exists()) {
-            const data = chatDoc.data();
-            const user = getUser();
-            const partnerName = document.querySelector('.chat-partner-name');
-            if (partnerName) {
-                if (data.type === 'booking') {
-                    partnerName.textContent = 'Service Chat';
-                } else {
-                    partnerName.textContent = 'Job Chat';
-                }
-            }
+        const data = await apiGetChat(chatId);
+        const chat = data.chat;
+        const partnerName = document.querySelector('.chat-partner-name');
+        if (partnerName) {
+            partnerName.textContent = chat.type === 'booking' ? 'Service Chat' : 'Job Chat';
         }
     } catch (e) {
         console.error('Load chat info error:', e);
+    }
+}
+
+// ===== POLL MESSAGES =====
+async function pollMessages() {
+    if (!activeChatId) return;
+
+    try {
+        const data = await apiGetMessages(activeChatId, lastMessageTime);
+        const messages = data.messages || [];
+
+        if (messages.length > 0) {
+            // Update last message time
+            const lastMsg = messages[messages.length - 1];
+            lastMessageTime = lastMsg.createdAt || lastMsg.updatedAt;
+
+            // If this is the first poll, render all messages
+            if (!lastMessageTime || messages.length > 5) {
+                renderMessages(messages);
+            } else {
+                // Append new messages
+                appendMessages(messages);
+            }
+        }
+    } catch (e) {
+        console.error('Poll messages error:', e);
     }
 }
 
@@ -129,8 +137,8 @@ function renderMessages(messages) {
     }
 
     container.innerHTML = messages.map(msg => {
-        const isMine = msg.senderId === user.uid;
-        const time = msg.timestamp?.toDate ? formatTime(msg.timestamp.toDate()) : '';
+        const isMine = msg.senderId === user._id;
+        const time = msg.createdAt ? formatTime(new Date(msg.createdAt)) : '';
 
         return `
             <div class="chat-msg ${isMine ? 'chat-msg-mine' : 'chat-msg-theirs'}">
@@ -143,7 +151,37 @@ function renderMessages(messages) {
         `;
     }).join('');
 
-    // Auto-scroll to bottom
+    container.scrollTop = container.scrollHeight;
+}
+
+// ===== APPEND MESSAGES =====
+function appendMessages(messages) {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+
+    const user = getUser();
+    if (!user) return;
+
+    // Remove empty placeholder if present
+    const empty = container.querySelector('.chat-empty');
+    if (empty) empty.remove();
+
+    messages.forEach(msg => {
+        const isMine = msg.senderId === user._id;
+        const time = msg.createdAt ? formatTime(new Date(msg.createdAt)) : '';
+
+        const div = document.createElement('div');
+        div.className = `chat-msg ${isMine ? 'chat-msg-mine' : 'chat-msg-theirs'}`;
+        div.innerHTML = `
+            <div class="chat-bubble">
+                ${!isMine ? `<div class="chat-sender">${msg.senderName || 'User'}</div>` : ''}
+                <div class="chat-text">${escapeHtml(msg.text)}</div>
+                <div class="chat-time">${time}</div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
     container.scrollTop = container.scrollHeight;
 }
 
@@ -159,13 +197,9 @@ async function sendMessage() {
     input.value = '';
 
     try {
-        await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
-            senderId: user.uid,
-            senderName: user.displayName || 'User',
-            text,
-            timestamp: serverTimestamp(),
-            read: false
-        });
+        await apiSendMessage(activeChatId, text);
+        // Immediately poll for the new message
+        pollMessages();
     } catch (error) {
         console.error('Send message error:', error);
         input.value = text;
@@ -192,11 +226,12 @@ function closeChat() {
     const fab = document.getElementById('chatFab');
     panel.classList.remove('open');
     fab.style.display = 'none';
-    if (chatUnsubscribe) {
-        chatUnsubscribe();
-        chatUnsubscribe = null;
+    if (chatPollTimer) {
+        clearInterval(chatPollTimer);
+        chatPollTimer = null;
     }
     activeChatId = null;
+    lastMessageTime = null;
 }
 
 // ===== HELPERS =====

@@ -1,7 +1,7 @@
 // ===== MAIN APPLICATION JS =====
 import { initI18n } from './i18n.js';
 import { initAnimations } from './animations.js';
-import { initAuth } from './auth.js';
+import { initAuth, requireAuth } from './auth.js';
 import { initChat } from './chat.js';
 import { initBookingPage, initWorkerDashboard } from './pages-booking.js';
 import { initHiringPage, initFindJobPage } from './pages-jobs.js';
@@ -85,35 +85,7 @@ function initHoverEffects() {
     });
 }
 
-// ===== LANGUAGE DROPDOWN =====
-function initLangSwitcher() {
-    document.querySelectorAll('.lang-switcher').forEach(switcher => {
-        const btn = switcher.querySelector('.lang-btn');
-        const dropdown = switcher.querySelector('.lang-dropdown');
-        if (!btn || !dropdown) return;
 
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('open');
-        });
-
-        dropdown.querySelectorAll('.lang-option').forEach(option => {
-            option.addEventListener('click', () => {
-                dropdown.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                const flag = option.textContent.trim().split(' ')[0];
-                const name = option.textContent.trim().split(' ').slice(1).join(' ');
-                btn.textContent = `🌐 ${name} ▾`;
-                dropdown.classList.remove('open');
-            });
-        });
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
-    });
-}
 
 // ===== CATEGORY CARDS (for app pages) =====
 function initCategoryCards() {
@@ -158,20 +130,31 @@ function initTabs() {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize i18n first so saved language is applied immediately
+    initI18n();
+
     initNavbar();
     initScrollReveal();
     initSmoothScroll();
     initHoverEffects();
-    initLangSwitcher();
     initCategoryCards();
     initToggles();
     initTabs();
-    initI18n();
     initAnimations();
 
     // Backend modules
     initAuth();
     initChat();
+
+    // ===== GLOBAL CTA HANDLERS =====
+    // "Join Now" button on homepage should trigger auth flow instead of just jumping to "#"
+    const joinNowBtn = document.querySelector('[data-i18n="cta_join"]');
+    if (joinNowBtn) {
+        joinNowBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            requireAuth();
+        });
+    }
 
     // Page-specific initialization
     const path = window.location.pathname;

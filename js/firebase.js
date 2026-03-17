@@ -1,45 +1,37 @@
-// ===== FIREBASE INITIALIZATION =====
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// ===== FIREBASE.JS — COMPATIBILITY SHIM =====
+// Firebase has been removed. This file re-exports from the new api.js + auth.js
+// so that any leftover imports from other files still work.
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDK-ATv6qFI8YFfqmq-SXF4Uym5aBWZB2I",
-    authDomain: "localserve-app.firebaseapp.com",
-    projectId: "localserve-app",
-    storageBucket: "localserve-app.firebasestorage.app",
-    messagingSenderId: "424359387986",
-    appId: "1:424359387986:web:a6080c869c1182c1be508b"
-};
+import { getToken, clearToken, getSavedUser } from './api.js';
+import { initAuth, getUser, requireAuth, showToast } from './auth.js';
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
-
-// ===== AUTH HELPERS =====
+// Re-export auth helpers with the same names other files expect
 export async function loginWithGoogle() {
-    try {
-        const result = await signInWithPopup(auth, googleProvider);
-        return result.user;
-    } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
-    }
+    // No Google sign-in — just open the login modal
+    requireAuth();
+    return getUser();
 }
 
 export async function logout() {
-    try {
-        await signOut(auth);
-    } catch (error) {
-        console.error('Logout failed:', error);
-    }
+    clearToken();
+    window.location.reload();
 }
 
 export function onAuthChange(callback) {
-    return onAuthStateChanged(auth, callback);
+    // Run callback with saved user on next tick, then listen for auth events
+    setTimeout(() => {
+        callback(getUser());
+    }, 100);
+
+    window.addEventListener('authStateChanged', (e) => {
+        callback(e.detail?.user || null);
+    });
 }
 
 export function getCurrentUser() {
-    return auth.currentUser;
+    return getUser();
 }
+
+// No Firestore db export — modules have been rewritten
+export const db = null;
+export const auth = null;

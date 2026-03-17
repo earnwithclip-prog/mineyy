@@ -79,7 +79,7 @@ export function initHiringPage() {
         window.addEventListener('authStateChanged', (e) => {
             const user = e.detail?.user;
             if (user) {
-                startJobListening(user.uid);
+                startJobListening(user._id);
             } else {
                 sidebar.innerHTML = sidebarFallback;
             }
@@ -87,7 +87,7 @@ export function initHiringPage() {
 
         const user = getUser();
         if (user) {
-            startJobListening(user.uid);
+            startJobListening(user._id);
         }
     }
 }
@@ -104,6 +104,8 @@ export function initFindJobPage() {
     listenForJobs((jobs) => {
         if (jobs.length > 0) {
             renderJobs(jobs, container);
+            // Keep a local copy for search
+            allJobs = jobs;
         } else {
             // Keep static demo content if no Firestore jobs exist
             container.innerHTML = staticFallback;
@@ -142,11 +144,22 @@ export function initFindJobPage() {
         });
     }
 
-    // Filter pills
+    // Filter pills (purely visual for now)
     document.querySelectorAll('.filter-pills .pill').forEach(pill => {
         pill.addEventListener('click', () => {
             document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
+        });
+    });
+
+    // Static "Apply Now" buttons in fallback demo cards
+    // should still open the auth flow so the user experiences
+    // a complete journey even before real jobs exist.
+    const staticApplyButtons = document.querySelectorAll('.jobs-grid .job-card-full .btn.btn-primary[data-i18n="find_apply"]');
+    staticApplyButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            requireAuth();
         });
     });
 }

@@ -16,6 +16,8 @@ export const translations = {
     hero_sub: "AI-powered matching. Real-time tracking. Trusted local hiring.",
     hero_cta: "Get Started →",
     hero_cta2: "Watch Demo",
+    hero_pill: "The #1 Local Services Platform",
+    hero_trusted: "Trusted by 10,000+ users",
     stat_jobs: "50K+ Jobs Completed",
     stat_workers: "1.5K+ Active Workers",
     stat_secure: "Verified & Secure",
@@ -68,6 +70,39 @@ export const translations = {
     cta_join: "Join Now",
     cta_hire: "Hire Workers",
     cta_work: "Find Work",
+
+    // How It Works
+    hiw_pill: "🎯 How It Works",
+    hiw_heading: "Get Started in 4 Simple Steps",
+    hiw_sub: "From search to service — it's fast, simple, and designed for everyone.",
+    hiw1_title: "Search & Select",
+    hiw1_desc: "Browse service categories or search for what you need. Pick from verified workers near you.",
+    hiw2_title: "Describe & Book",
+    hiw2_desc: "Tell us your problem, set your budget, choose a date — and submit your booking request.",
+    hiw3_title: "Track in Real-Time",
+    hiw3_desc: "Track your matched worker live on GPS from the moment they accept until job completion.",
+    hiw4_title: "Pay & Review",
+    hiw4_desc: "Pay securely through the app. Rate your experience and help others find great workers.",
+
+    // Stats
+    stats_jobs: "Jobs Completed",
+    stats_workers: "Active Workers",
+    stats_users: "Happy Users",
+    stats_satisfaction: "Satisfaction Rate",
+
+    // Testimonials
+    testimonials_pill: "💬 Testimonials",
+    testimonials_heading: "What Our Users Say",
+    testimonials_sub: "Real stories from real people who found the help they needed.",
+    test1_quote: "\"Found a plumber in 10 minutes. He arrived on time, fixed the leak, and the pricing was totally transparent. Life saver!\"",
+    test1_name: "Pranay K.",
+    test1_role: "Homeowner, Hyderabad",
+    test2_quote: "\"As a freelance electrician, this app changed my life. I get consistent work, fair pay, and I can manage everything from my phone.\"",
+    test2_name: "Suresh M.",
+    test2_role: "Electrician, Bangalore",
+    test3_quote: "\"Hired a full-time cook through the monthly hiring feature. The verification process made me feel safe and confident.\"",
+    test3_name: "Rina D.",
+    test3_role: "Business Owner, Mumbai",
 
     // Footer
     footer_desc: "Connecting people, skills & opportunities in real time. The future of local services is here.",
@@ -147,6 +182,13 @@ export const translations = {
     find_apply: "Apply Now",
     find_save: "Save",
     find_chat: "Chat with Employer",
+
+    // Map Section
+    map_pill: "📍 Find Workers",
+    map_heading: "Find Workers Near You",
+    map_sub: "Discover verified skilled workers available in your area right now.",
+    map_info_title: "Workers Ready to Help",
+    map_info_desc: "Our network of verified professionals is spread across your city. Detect your location to find the nearest available workers for any service you need.",
   },
 
   hi: {
@@ -165,6 +207,8 @@ export const translations = {
     hero_sub: "AI-संचालित मिलान। रियल-टाइम ट्रैकिंग। विश्वसनीय स्थानीय भर्ती।",
     hero_cta: "शुरू करें →",
     hero_cta2: "डेमो देखें",
+    hero_pill: "#1 स्थानीय सेवा प्लेटफार्म",
+    hero_trusted: "10,000+ उपयोगकर्ताओं द्वारा विश्वसनीय",
     stat_jobs: "50K+ काम पूरे हुए",
     stat_workers: "1.5K+ सक्रिय कर्मचारी",
     stat_secure: "सत्यापित और सुरक्षित",
@@ -217,6 +261,39 @@ export const translations = {
     cta_join: "जुड़ें",
     cta_hire: "भर्ती करें",
     cta_work: "काम खोजें",
+
+    // How It Works
+    hiw_pill: "🎯 यह कैसे काम करता है",
+    hiw_heading: "4 सरल चरणों में शुरू करें",
+    hiw_sub: "खोज से सेवा तक — यह तेज, सरल और सबके लिए बना है।",
+    hiw1_title: "खोजें और चुनें",
+    hiw1_desc: "सेवा श्रेणियां ब्राउज़ करें या जो चाहिए वह खोजें। अपने पास के सत्यापित कर्मचारियों में से चुनें।",
+    hiw2_title: "बताएं और बुक करें",
+    hiw2_desc: "अपनी समस्या बताएं, बजट सेट करें, तारीख चुनें — और बुकिंग अनुरोध जमा करें।",
+    hiw3_title: "रियल-टाइम ट्रैक करें",
+    hiw3_desc: "अपने मैच किए गए कर्मचारी को GPS पर लाइव ट्रैक करें — स्वीकृति से काम पूरा होने तक।",
+    hiw4_title: "भुगतान करें और रिव्यू दें",
+    hiw4_desc: "ऐप के ज़रिए सुरक्षित भुगतान करें। अपना अनुभव रेट करें और दूसरों की मदद करें।",
+
+    // Stats
+    stats_jobs: "काम पूरे हुए",
+    stats_workers: "सक्रिय कर्मचारी",
+    stats_users: "खुश उपयोगकर्ता",
+    stats_satisfaction: "संतुष्टि दर",
+
+    // Testimonials
+    testimonials_pill: "💬 प्रशंसापत्र",
+    testimonials_heading: "हमारे उपयोगकर्ता क्या कहते हैं",
+    testimonials_sub: "उन लोगों की सच्ची कहानियां जिन्हें ज़रूरत की मदद मिली।",
+    test1_quote: "\"10 मिनट में प्लंबर मिल गया। समय पर आया, लीक ठीक किया, और कीमत पूरी तरह पारदर्शी थी। जान बचा ली!\"",
+    test1_name: "प्रणय के.",
+    test1_role: "गृहस्वामी, हैदराबाद",
+    test2_quote: "\"एक फ्रीलांस इलेक्ट्रीशियन के रूप में, इस ऐप ने मेरी ज़िंदगी बदल दी। मुझे लगातार काम मिलता है, उचित वेतन मिलता है।\"",
+    test2_name: "सुरेश एम.",
+    test2_role: "इलेक्ट्रीशियन, बैंगलोर",
+    test3_quote: "\"मासिक भर्ती फीचर के ज़रिए एक फुल-टाइम कुक को भर्ती किया। सत्यापन प्रक्रिया ने मुझे सुरक्षित महसूस कराया।\"",
+    test3_name: "रीना डी.",
+    test3_role: "व्यवसाय मालिक, मुंबई",
 
     // Footer
     footer_desc: "लोगों, कौशल और अवसरों को रियल-टाइम में जोड़ रहे हैं। स्थानीय सेवाओं का भविष्य यहाँ है।",
@@ -296,6 +373,13 @@ export const translations = {
     find_apply: "अभी आवेदन करें",
     find_save: "सेव करें",
     find_chat: "नियोक्ता से चैट करें",
+
+    // Map Section
+    map_pill: "📍 कर्मचारी खोजें",
+    map_heading: "अपने पास कर्मचारी खोजें",
+    map_sub: "अभी अपने क्षेत्र में उपलब्ध सत्यापित कुशल कर्मचारियों को खोजें।",
+    map_info_title: "मदद के लिए तैयार कर्मचारी",
+    map_info_desc: "हमारा सत्यापित पेशेवरों का नेटवर्क आपके शहर में फैला हुआ है। अपने पास उपलब्ध कर्मचारी खोजने के लिए अपना स्थान पता लगाएं।",
   },
 
   te: {
@@ -314,6 +398,8 @@ export const translations = {
     hero_sub: "AI-ఆధారిత మ్యాచింగ్. రియల్-టైమ్ ట్రాకింగ్. విశ్వసనీయ స్థానిక నియామకం.",
     hero_cta: "ప్రారంభించండి →",
     hero_cta2: "డెమో చూడండి",
+    hero_pill: "#1 స్థానిక సేవల ప్లాట్‌ఫారం",
+    hero_trusted: "10,000+ వినియోగదారులచే విశ్వసనీయం",
     stat_jobs: "50K+ పనులు పూర్తయ్యాయి",
     stat_workers: "1.5K+ యాక్టివ్ వర్కర్లు",
     stat_secure: "వెరిఫైడ్ & సెక్యూర్",
@@ -366,6 +452,39 @@ export const translations = {
     cta_join: "చేరండి",
     cta_hire: "నియమించండి",
     cta_work: "పని కనుగొనండి",
+
+    // How It Works
+    hiw_pill: "🎯 ఇది ఎలా పని చేస్తుంది",
+    hiw_heading: "4 సులభ దశల్లో ప్రారంభించండి",
+    hiw_sub: "సెర్చ్ నుండి సేవ వరకు — ఇది వేగవంతమైనది, సులభమైనది, అందరి కోసం రూపొందించబడింది.",
+    hiw1_title: "వెతకండి & ఎంచుకోండి",
+    hiw1_desc: "సేవా వర్గాలను బ్రౌజ్ చేయండి లేదా మీకు కావలసినది వెతకండి. సమీపంలోని వెరిఫైడ్ వర్కర్లలో ఎంచుకోండి.",
+    hiw2_title: "వివరించండి & బుక్ చేయండి",
+    hiw2_desc: "మీ సమస్యను చెప్పండి, బడ్జెట్ సెట్ చేయండి, తేదీ ఎంచుకోండి — మరియు బుకింగ్ రిక్వెస్ట్ సబ్మిట్ చేయండి.",
+    hiw3_title: "రియల్-టైమ్‌లో ట్రాక్ చేయండి",
+    hiw3_desc: "మీ మ్యాచ్ అయిన వర్కర్‌ను GPS పై లైవ్‌గా ట్రాక్ చేయండి — అంగీకారం నుండి పని పూర్తయ్యే వరకు.",
+    hiw4_title: "చెల్లించండి & రివ్యూ ఇవ్వండి",
+    hiw4_desc: "యాప్ ద్వారా సురక్షితంగా చెల్లించండి. మీ అనుభవాన్ని రేట్ చేయండి మరియు ఇతరులకు సహాయం చేయండి.",
+
+    // Stats
+    stats_jobs: "పనులు పూర్తయ్యాయి",
+    stats_workers: "యాక్టివ్ వర్కర్లు",
+    stats_users: "సంతోషకరమైన వినియోగదారులు",
+    stats_satisfaction: "సంతృప్తి రేటు",
+
+    // Testimonials
+    testimonials_pill: "💬 ప్రశంసాపత్రాలు",
+    testimonials_heading: "మా వినియోగదారులు ఏమి చెబుతున్నారు",
+    testimonials_sub: "అవసరమైన సహాయం పొందిన నిజమైన వ్యక్తుల నిజమైన కథలు.",
+    test1_quote: "\"10 నిమిషాల్లో ప్లంబర్ దొరికాడు. సమయానికి వచ్చాడు, లీక్ సరిచేశాడు, ధర పూర్తిగా పారదర్శకంగా ఉంది. ప్రాణాలు కాపాడాడు!\"",
+    test1_name: "ప్రణయ్ కె.",
+    test1_role: "గృహస్వామి, హైదరాబాద్",
+    test2_quote: "\"ఫ్రీలాన్స్ ఎలక్ట్రీషియన్‌గా, ఈ యాప్ నా జీవితాన్ని మార్చేసింది. నాకు స్థిరమైన పని, న్యాయమైన జీతం వస్తుంది.\"",
+    test2_name: "సురేష్ ఎం.",
+    test2_role: "ఎలక్ట్రీషియన్, బెంగళూరు",
+    test3_quote: "\"మాసిక నియామక ఫీచర్ ద్వారా ఫుల్-టైమ్ కుక్‌ని నియమించాను. వెరిఫికేషన్ ప్రక్రియ నాకు భద్రత అనుభూతిని ఇచ్చింది.\"",
+    test3_name: "రీనా డి.",
+    test3_role: "వ్యాపార యజమానురాలు, ముంబై",
 
     // Footer
     footer_desc: "వ్యక్తులు, నైపుణ్యాలు & అవకాశాలను రియల్-టైమ్‌లో కనెక్ట్ చేస్తున్నాం.",
@@ -445,5 +564,12 @@ export const translations = {
     find_apply: "ఇప్పుడే దరఖాస్తు చేయండి",
     find_save: "సేవ్ చేయండి",
     find_chat: "యజమానితో చాట్ చేయండి",
+
+    // Map Section
+    map_pill: "📍 వర్కర్లను కనుగొనండి",
+    map_heading: "మీ సమీపంలో వర్కర్లను కనుగొనండి",
+    map_sub: "ఇప్పుడు మీ ప్రాంతంలో అందుబాటులో ఉన్న వెరిఫైడ్ నైపుణ్యం కలిగిన వర్కర్లను కనుగొనండి.",
+    map_info_title: "సహాయానికి సిద్ధంగా ఉన్న వర్కర్లు",
+    map_info_desc: "మా వెరిఫైడ్ ప్రొఫెషనల్స్ నెట్‌వర్క్ మీ నగరం అంతటా విస్తరించి ఉంది. సమీపంలోని వర్కర్లను కనుగొనడానికి మీ లొకేషన్ గుర్తించండి.",
   }
 };

@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="/styles/pages.css" />
     <link rel="stylesheet" href="/styles/auth.css" />
     <link rel="stylesheet" href="/styles/chat.css" />
+    <link rel="stylesheet" href="/styles/map.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="/js/main.js"></script>
 </head>
 
@@ -27,7 +30,7 @@
                 <div class="nav-logo-icon">L</div>LocalServe
             </a>
             <div class="nav-links">
-                <a href="/">Home</a>
+                <a href="/" data-i18n="nav_home">Home</a>
                 <a href="/pages/need-worker.html" class="active-link" data-i18n="srv1_title">Need a Worker</a>
                 <a href="/pages/need-work.html" data-i18n="srv2_title">Need Work</a>
                 <a href="/pages/hire-monthly.html" data-i18n="srv3_title">Hire Employee</a>
@@ -139,7 +142,7 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Date & Time -->
+                    <!-- Step 3: Date & Time + Location -->
                     <div class="booking-step" id="step3">
                         <h3 data-i18n="nw_step3">Choose Date & Time</h3>
                         <div class="grid-2">
@@ -152,9 +155,17 @@
                                 <input type="time" class="form-input" />
                             </div>
                         </div>
-                        <button class="btn btn-secondary" style="margin-top: var(--space-md);">
-                            <span data-i18n="nw_location">📍 Auto-detect My Location</span>
+
+                        <label class="form-label" style="margin-top: var(--space-lg);" data-i18n="nw_location">📍 Your Location</label>
+                        <button class="detect-location-btn" id="detectLocationBtn" type="button">
+                            <span class="btn-spinner"></span>
+                            📍 <span data-i18n="nw_location">Auto-detect My Location</span>
                         </button>
+                        <div class="map-container" id="bookingMap" style="display:none;"></div>
+                        <div class="location-info" id="locationInfo" style="display:none;">
+                            <span class="location-icon">📍</span>
+                            <span class="location-text" id="locationText">Detecting location...</span>
+                        </div>
                     </div>
 
                     <!-- Step 4: Budget -->
@@ -361,6 +372,90 @@
                     submitBtn.textContent = 'Book Worker →';
                 }
             });
+        }
+
+        // ===== BOOKING MAP =====
+        let bookingMap = null;
+        let bookingMarker = null;
+
+        const detectBtn = document.getElementById('detectLocationBtn');
+        if (detectBtn) {
+            detectBtn.addEventListener('click', () => {
+                detectBtn.classList.add('loading');
+
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser.');
+                    detectBtn.classList.remove('loading');
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        showBookingMap(lat, lng);
+                        reverseGeocode(lat, lng);
+                        detectBtn.classList.remove('loading');
+                    },
+                    (error) => {
+                        // Fallback to Hyderabad center
+                        showBookingMap(17.385, 78.4867);
+                        document.getElementById('locationText').textContent = 'Could not detect location. Drag the pin to set your location.';
+                        document.getElementById('locationInfo').style.display = 'flex';
+                        detectBtn.classList.remove('loading');
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            });
+        }
+
+        function showBookingMap(lat, lng) {
+            const mapEl = document.getElementById('bookingMap');
+            mapEl.style.display = 'block';
+
+            if (!bookingMap) {
+                bookingMap = L.map('bookingMap').setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(bookingMap);
+
+                bookingMarker = L.marker([lat, lng], { draggable: true }).addTo(bookingMap);
+
+                // When marker is dragged, reverse geocode new position
+                bookingMarker.on('dragend', () => {
+                    const pos = bookingMarker.getLatLng();
+                    reverseGeocode(pos.lat, pos.lng);
+                });
+
+                // Click on map to move marker
+                bookingMap.on('click', (e) => {
+                    bookingMarker.setLatLng(e.latlng);
+                    reverseGeocode(e.latlng.lat, e.latlng.lng);
+                });
+            } else {
+                bookingMap.setView([lat, lng], 15);
+                bookingMarker.setLatLng([lat, lng]);
+            }
+
+            // Fix map rendering after becoming visible
+            setTimeout(() => bookingMap.invalidateSize(), 100);
+        }
+
+        function reverseGeocode(lat, lng) {
+            const infoEl = document.getElementById('locationInfo');
+            const textEl = document.getElementById('locationText');
+            infoEl.style.display = 'flex';
+            textEl.textContent = 'Detecting address...';
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`)
+                .then(r => r.json())
+                .then(data => {
+                    textEl.textContent = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                })
+                .catch(() => {
+                    textEl.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                });
         }
     </script>
 </body>

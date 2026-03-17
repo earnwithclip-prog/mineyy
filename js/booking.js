@@ -1,9 +1,5 @@
-// ===== BOOKING MODULE (Instant Services) =====
-import { db } from './firebase.js';
-import {
-    collection, addDoc, doc, updateDoc, onSnapshot,
-    query, where, orderBy, serverTimestamp, getDoc
-} from 'firebase/firestore';
+// ===== BOOKING MODULE (Instant Services) — Express/MongoDB backend =====
+import { apiCreateBooking, apiGetPendingBookings, apiUpdateBookingStatus } from './api.js';
 import { requireAuth, showToast, getUser } from './auth.js';
 
 // ===== CREATE BOOKING (Need Worker page) =====
@@ -12,24 +8,16 @@ export async function createBooking({ category, description, budget, date, time 
     if (!user) return null;
 
     try {
-        const bookingRef = await addDoc(collection(db, 'bookings'), {
-            userId: user.uid,
-            userName: user.displayName || 'User',
-            userPhoto: user.photoURL || null,
+        const data = await apiCreateBooking({
             category,
             description: description || '',
             budget: parseInt(budget) || 500,
-            preferredDate: date || '',
-            preferredTime: time || '',
-            status: 'pending',
-            workerId: null,
-            workerName: null,
-            chatId: null,
-            createdAt: serverTimestamp()
+            date: date || '',
+            time: time || ''
         });
 
         showToast('✅ Booking submitted! Workers will be notified.');
-        return bookingRef.id;
+        return data.booking?._id || true;
     } catch (error) {
         console.error('Booking error:', error);
         showToast('❌ Failed to submit booking. Please try again.');
@@ -37,39 +25,49 @@ export async function createBooking({ category, description, budget, date, time 
     }
 }
 
-// ===== LISTEN FOR PENDING BOOKINGS (Need Work page) =====
-export function listenForBookings(callback) {
-    const q = query(
-        collection(db, 'bookings'),
-        where('status', '==', 'pending'),
-        orderBy('createdAt', 'desc')
-    );
+// ===== FETCH PENDING BOOKINGS (Need Work page — polling) =====
+let bookingPollTimer = null;
 
-    return onSnapshot(q, (snapshot) => {
-        const bookings = [];
-        snapshot.forEach(docSnap => {
-            bookings.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        callback(bookings);
-    }, (error) => {
-        console.error('Bookings listener error:', error);
-    });
+export function listenForBookings(callback) {
+    async function poll() {
+        try {
+            const data = await apiGetPendingBookings();
+            const bookings = (data.bookings || []).map(b => ({
+                ...b,
+                id: b._id,
+                createdAt: b.createdAt ? { toDate: () => new Date(b.createdAt) } : null
+            }));
+            callback(bookings);
+        } catch (e) {
+            console.error('Bookings poll error:', e);
+        }
+    }
+
+    poll();
+    bookingPollTimer = setInterval(poll, 10000); // poll every 10s
+
+    // Return unsubscribe function
+    return () => {
+        if (bookingPollTimer) clearInterval(bookingPollTimer);
+    };
 }
 
-// ===== LISTEN FOR MY BOOKINGS (User's own bookings) =====
+// ===== FETCH MY BOOKINGS =====
 export function listenForMyBookings(userId, callback) {
-    const q = query(
-        collection(db, 'bookings'),
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
-    );
-
-    return onSnapshot(q, (snapshot) => {
-        const bookings = [];
-        snapshot.forEach(docSnap => {
-            bookings.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        callback(bookings);
+    // For the profile page we just fetch once
+    import('./api.js').then(async ({ apiGetMyBookings }) => {
+        try {
+            const data = await apiGetMyBookings();
+            const bookings = (data.bookings || []).map(b => ({
+                ...b,
+                id: b._id,
+                createdAt: b.createdAt ? { toDate: () => new Date(b.createdAt) } : null
+            }));
+            callback(bookings);
+        } catch (e) {
+            console.error('My bookings error:', e);
+            callback([]);
+        }
     });
 }
 
@@ -79,34 +77,9 @@ export async function acceptBooking(bookingId) {
     if (!user) return;
 
     try {
-        // Create chat room
-        const chatRef = await addDoc(collection(db, 'chats'), {
-            bookingId,
-            participants: [],
-            type: 'booking',
-            createdAt: serverTimestamp()
-        });
-
-        // Get booking to find userId
-        const bookingSnap = await getDoc(doc(db, 'bookings', bookingId));
-        const booking = bookingSnap.data();
-
-        // Update chat with participants
-        await updateDoc(doc(db, 'chats', chatRef.id), {
-            participants: [booking.userId, user.uid]
-        });
-
-        // Update booking
-        await updateDoc(doc(db, 'bookings', bookingId), {
-            status: 'accepted',
-            workerId: user.uid,
-            workerName: user.displayName || 'Worker',
-            workerPhoto: user.photoURL || null,
-            chatId: chatRef.id
-        });
-
-        showToast('✅ Job accepted! Chat is now open.');
-        return chatRef.id;
+        await apiUpdateBookingStatus(bookingId, 'confirmed');
+        showToast('✅ Job accepted!');
+        return null; // No chat ID for now — chat handled via API
     } catch (error) {
         console.error('Accept error:', error);
         showToast('❌ Failed to accept booking.');
@@ -116,7 +89,6 @@ export async function acceptBooking(bookingId) {
 
 // ===== DECLINE BOOKING =====
 export async function declineBooking(bookingId) {
-    // Just remove from view for this worker (no DB change needed for pending)
     showToast('Job declined');
 }
 
@@ -129,7 +101,7 @@ export function renderBookings(bookings, container) {
             <div class="card" style="text-align:center; padding: 3rem;">
                 <div style="font-size: 48px; margin-bottom: 1rem;">📭</div>
                 <h4>No pending jobs</h4>
-                <p style="color: var(--text-muted);">New job requests will appear here in real-time.</p>
+                <p style="color: var(--text-muted);">New job requests will appear here.</p>
             </div>
         `;
         return;
@@ -164,10 +136,7 @@ export function renderBookings(bookings, container) {
             const id = btn.dataset.id;
             btn.disabled = true;
             btn.textContent = 'Accepting...';
-            const chatId = await acceptBooking(id);
-            if (chatId) {
-                window.dispatchEvent(new CustomEvent('openChat', { detail: { chatId } }));
-            }
+            await acceptBooking(id);
         });
     });
 
