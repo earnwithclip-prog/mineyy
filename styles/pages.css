@@ -194,6 +194,8 @@
     margin-top: var(--space-xl);
     padding-top: var(--space-xl);
     border-top: 1px solid var(--border-light);
+    position: relative;
+    z-index: 1;
 }
 
 .booking-sidebar h3 {
@@ -332,6 +334,8 @@
 .ij-actions {
     display: flex;
     gap: var(--space-sm);
+    position: relative;
+    z-index: 1;
 }
 
 .dashboard-sidebar {
@@ -645,6 +649,8 @@
     flex-direction: column;
     gap: var(--space-sm);
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
 }
 
 /* ===== RESPONSIVE FOR PAGES ===== */

@@ -1,5 +1,11 @@
 // ===== LOCALSERVE BACKEND SERVER =====
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, '.env') });
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -15,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 // ===== MIDDLEWARE =====
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
+    origin: true,
     credentials: true
 }));
 app.use(express.json());

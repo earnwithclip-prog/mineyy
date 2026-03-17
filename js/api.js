@@ -1,7 +1,10 @@
 // ===== API HELPER — replaces firebase.js =====
 // Handles token storage and all API calls to the Express backend.
 
-const API_BASE = 'http://localhost:5000/api';
+// Dynamic API base: use localhost in dev, deployed backend in production
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://mineyy-server.onrender.com/api';
 
 // ===== TOKEN MANAGEMENT =====
 export function getToken() {
@@ -34,7 +37,15 @@ async function apiFetch(path, options = {}) {
     const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    let res;
+    try {
+        res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    } catch (networkError) {
+        const err = new Error('Cannot connect to server. Please check your internet connection.');
+        err.status = 0;
+        throw err;
+    }
+
     const data = await res.json();
 
     if (!res.ok) {

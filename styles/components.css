@@ -167,6 +167,10 @@
     cursor: pointer;
     border: none;
     letter-spacing: 0.01em;
+    position: relative;
+    z-index: 1;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary {
@@ -576,6 +580,7 @@ textarea.form-input {
     cursor: pointer;
     transition: all var(--transition-base);
     text-align: center;
+    touch-action: manipulation;
 }
 
 .category-card:hover {
@@ -616,6 +621,7 @@ textarea.form-input {
     position: relative;
     cursor: pointer;
     transition: background var(--transition-base);
+    touch-action: manipulation;
 }
 
 .toggle.active {

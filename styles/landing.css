@@ -51,6 +51,8 @@
     gap: var(--space-md);
     margin-bottom: var(--space-2xl);
     flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
 }
 
 .hero-trust {
@@ -674,6 +676,8 @@
     gap: var(--space-md);
     justify-content: center;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
 }
 
 .cta-bg-glow {

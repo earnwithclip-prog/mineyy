@@ -1,7 +1,10 @@
 // ===== AUTH UI MODULE — Premium Glassmorphism Login =====
 import { getToken, clearToken, getSavedUser, setSavedUser, setToken } from './api.js';
 
-const API_BASE = 'http://localhost:5000/api';
+// Dynamic API base: use localhost in dev, deployed backend in production
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://mineyy-server.onrender.com/api';
 const GOOGLE_CLIENT_ID = '966175682043-i94u9nsplkj52cgik88m2r77hmg61sik.apps.googleusercontent.com';
 
 let currentUser = null;
@@ -13,10 +16,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 function validatePasswordClient(password) {
     const errors = [];
-    if (password.length < 8) errors.push('at least 8 characters');
-    if (!/[A-Z]/.test(password)) errors.push('1 uppercase letter');
-    if (!/[0-9]/.test(password)) errors.push('1 number');
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) errors.push('1 special character');
+    if (password.length < 4) errors.push('at least 4 characters');
     return errors;
 }
 
@@ -370,7 +370,7 @@ function showLoginModal(mode = 'login') {
             <form class="auth-card-form" id="authForm">
                 ${!isLogin ? `<input type="text" id="authName" class="auth-card-input" placeholder="Full Name" required />` : ''}
                 <input type="email" id="authEmail" class="auth-card-input" placeholder="Email" required />
-                <input type="password" id="authPassword" class="auth-card-input" placeholder="Password (min 8 chars, A-Z, 0-9, !@#)" required minlength="8" />
+                <input type="password" id="authPassword" class="auth-card-input" placeholder="Password" required minlength="4" />
 
                 <button type="submit" class="auth-btn-primary" id="authSubmitBtn">
                     ${isLogin ? 'Sign In' : 'Create Account'}
@@ -439,9 +439,8 @@ function showLoginModal(mode = 'login') {
         }
 
         if (!isLogin) {
-            const pwErrors = validatePasswordClient(password);
-            if (pwErrors.length > 0) {
-                errorEl.textContent = `Weak password \u2014 must include: ${pwErrors.join(', ')}.`;
+            if (password.length < 4) {
+                errorEl.textContent = 'Password must be at least 4 characters.';
                 errorEl.style.display = 'block';
                 return;
             }
