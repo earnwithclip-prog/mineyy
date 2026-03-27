@@ -54,7 +54,7 @@ async function start() {
     let isInMemory = false;
 
     try {
-        await mongoose.connect(mongoUri);
+        await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 3000 });
         console.log('✅ Connected to MongoDB');
     } catch (err) {
         console.log('⚠️  Local MongoDB not available, using in-memory MongoDB...');

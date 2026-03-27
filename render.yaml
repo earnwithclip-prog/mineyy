@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mineyy-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        value: localserve_super_secret_key_2026
+      - key: PORT
+        value: 10000
