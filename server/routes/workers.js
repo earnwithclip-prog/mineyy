@@ -103,4 +103,23 @@ router.put('/profile', protect, async (req, res) => {
     }
 });
 
+// PATCH /api/workers/availability — Toggle online/offline status
+router.patch('/availability', protect, async (req, res) => {
+    try {
+        const { isAvailable, coordinates } = req.body;
+        const updates = { isAvailable: !!isAvailable };
+        if (coordinates?.lat && coordinates?.lng) {
+            updates.coordinates = coordinates;
+        }
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { $set: updates },
+            { new: true }
+        ).select('-password');
+        res.json({ success: true, message: isAvailable ? '🟢 You are now online!' : '🔴 You are now offline.', user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to update availability.' });
+    }
+});
+
 export default router;

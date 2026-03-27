@@ -728,3 +728,334 @@
         transform: translateX(-4px);
     }
 }
+
+/* ===== RADIUS FILTER (Find Job) ===== */
+.radius-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(124, 58, 237, 0.06);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.radius-filter-label {
+    font-weight: 600;
+    color: #7c3aed;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.radius-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.radius-btn {
+    padding: 6px 14px;
+    border: 1.5px solid rgba(124, 58, 237, 0.3);
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+
+.radius-btn.active {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #fff;
+    border-color: transparent;
+}
+
+.geo-status {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+/* ===== JOB CARD ENHANCEMENTS ===== */
+.job-card-full {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.jcf-top {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    min-height: 20px;
+    width: 100%;
+}
+
+.jcf-left {
+    width: 100%;
+}
+
+.jcf-actions {
+    flex-direction: row;
+    width: 100%;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.distance-badge {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.worktype-badge {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.job-desc-preview {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 6px 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* ===== MAP THUMBNAIL ===== */
+.job-map-thumb {
+    position: relative;
+    width: 110px;
+    height: 65px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1.5px solid rgba(124, 58, 237, 0.25);
+    margin-top: 10px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.job-map-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.map-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.job-map-thumb:hover .map-thumb-overlay {
+    opacity: 1;
+}
+
+/* ===== APPLICANT CARD (Employer Dashboard) ===== */
+.applicant-card {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+}
+
+.applicant-card:hover {
+    border-color: rgba(124, 58, 237, 0.3);
+}
+
+.applicant-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.applicant-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.applicant-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.applicant-name {
+    font-weight: 700;
+    color: var(--text-heading);
+    font-size: 1rem;
+}
+
+.applicant-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.applicant-note {
+    font-size: 0.85rem;
+    color: #a78bfa;
+    font-style: italic;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background: rgba(124, 58, 237, 0.08);
+    border-radius: 8px;
+    border-left: 3px solid #7c3aed;
+}
+
+.applicant-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+/* ===== CONTACT REVEAL CARD ===== */
+.contact-reveal-card {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    animation: fadeInUp 0.4s ease;
+}
+
+.contact-reveal-title {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.88rem;
+    margin-bottom: 6px;
+}
+
+.contact-reveal-item {
+    font-size: 0.88rem;
+    color: #d1fae5;
+    margin-bottom: 2px;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.status-pending { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+.status-accepted { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.status-rejected { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+
+/* ===== APPLIED JOB CARDS ===== */
+.applied-job-card {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 12px;
+}
+
+.applied-job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ===== STAR RATING WIDGET ===== */
+.rating-widget {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.06);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    animation: fadeInUp 0.4s ease;
+}
+
+.stars-row {
+    display: flex;
+    gap: 4px;
+}
+
+/* ===== DETECT LOCATION BTN ===== */
+.detect-location-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(124, 58, 237, 0.08);
+    border: 1.5px dashed rgba(124, 58, 237, 0.4);
+    border-radius: 12px;
+    color: #7c3aed;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+
+.detect-location-btn:hover {
+    background: rgba(124, 58, 237, 0.14);
+    border-color: #7c3aed;
+}
+
+/* ===== STATUS INDICATOR OFFLINE ===== */
+.status-indicator.offline {
+    color: #9ca3af;
+}
+
+.status-indicator.offline .pulse-dot {
+    background: #9ca3af;
+    animation: none;
+}
+
+/* ===== SECTION HEADING ===== */
+.section-heading {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+/* ===== MOBILE FIXES ===== */
+@media (max-width: 600px) {
+    .radius-filter-bar { flex-direction: column; align-items: flex-start; }
+    .geo-status { margin-left: 0; }
+    .benefits-grid { grid-template-columns: 1fr 1fr; }
+    .applicant-header { flex-direction: column; align-items: flex-start; }
+    .jcf-actions { flex-wrap: wrap; }
+}

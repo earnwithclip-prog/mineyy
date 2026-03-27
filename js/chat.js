@@ -1,10 +1,12 @@
-// ===== REAL-TIME CHAT MODULE — Express/MongoDB backend (polling) =====
-import { apiGetChat, apiGetMessages, apiSendMessage } from './api.js';
+// ===== REAL-TIME CHAT MODULE — Polling + Phone Visibility =====
+import { apiGetChat, apiGetMessages, apiSendMessage, apiGetWorkerLocation, apiSaveLocation } from './api.js';
 import { getUser, requireAuth } from './auth.js';
 
 let activeChatId = null;
 let chatPollTimer = null;
 let lastMessageTime = null;
+let trackingWatchId = null;
+let isTracking = false;
 
 // ===== CREATE CHAT UI =====
 function createChatUI() {
@@ -28,6 +30,10 @@ function createChatUI() {
                     <button class="chat-close-btn" id="chatClose">✕</button>
                 </div>
             </div>
+            <!-- Phone info bar (shown after acceptance) -->
+            <div class="chat-phone-bar" id="chatPhoneBar" style="display:none;"></div>
+            <!-- Track location bar -->
+            <div class="chat-track-bar" id="chatTrackBar" style="display:none;"></div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-empty">
                     <div style="font-size: 48px;">💬</div>
@@ -47,7 +53,6 @@ function createChatUI() {
 
     document.body.appendChild(widget);
 
-    // Event listeners
     document.getElementById('chatClose').addEventListener('click', closeChat);
     document.getElementById('chatMinimize').addEventListener('click', minimizeChat);
     document.getElementById('chatFab').addEventListener('click', maximizeChat);
@@ -55,6 +60,47 @@ function createChatUI() {
     document.getElementById('chatInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
+
+    // Inject extra chat styles
+    if (!document.getElementById('chatExtraStyles')) {
+        const style = document.createElement('style');
+        style.id = 'chatExtraStyles';
+        style.textContent = `
+            .chat-phone-bar {
+                background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+                border-bottom: 1px solid rgba(0,0,0,0.08);
+                padding: 8px 16px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #065f46;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .chat-track-bar {
+                background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+                border-bottom: 1px solid rgba(0,0,0,0.08);
+                padding: 8px 16px;
+                font-size: 13px;
+                color: #4c1d95;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .chat-track-bar button {
+                padding: 4px 12px;
+                border: none;
+                border-radius: 6px;
+                background: #7c3aed;
+                color: white;
+                font-size: 12px;
+                cursor: pointer;
+                font-weight: 600;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 // ===== OPEN CHAT =====
@@ -69,49 +115,116 @@ export function openChat(chatId) {
     panel.classList.add('open');
     fab.style.display = 'none';
 
-    // Load chat info
     loadChatInfo(chatId);
-
-    // Start polling for messages
     pollMessages();
     if (chatPollTimer) clearInterval(chatPollTimer);
     chatPollTimer = setInterval(pollMessages, 3000);
 }
 
-// ===== LOAD CHAT INFO =====
+// ===== LOAD CHAT INFO (phone visibility + partner name) =====
 async function loadChatInfo(chatId) {
     try {
         const data = await apiGetChat(chatId);
         const chat = data.chat;
-        const partnerName = document.querySelector('.chat-partner-name');
-        if (partnerName) {
-            partnerName.textContent = chat.type === 'booking' ? 'Service Chat' : 'Job Chat';
+        const currentUser = getUser();
+
+        // Identify partner
+        const partner = chat.participants?.find(p => p._id !== currentUser?._id);
+        const partnerName = partner?.name || (chat.type === 'booking' ? 'Service Chat' : 'Job Chat');
+
+        const nameEl = document.querySelector('.chat-partner-name');
+        if (nameEl) nameEl.textContent = partnerName;
+
+        // Phone visibility — show phone for ALL chat participants (acceptance happened by chat creation)
+        const phoneBar = document.getElementById('chatPhoneBar');
+        if (phoneBar) {
+            const phones = [];
+            if (currentUser?.phone) phones.push(`You: ${currentUser.phone}`);
+            if (partner?.phone) phones.push(`${partner.name}: ${partner.phone}`);
+
+            if (phones.length > 0) {
+                phoneBar.innerHTML = `📞 Contact: ${phones.join(' &nbsp;|&nbsp; ')}`;
+                phoneBar.style.display = 'flex';
+            } else {
+                phoneBar.innerHTML = `📞 Phone: <em>Not provided — ask them to add their phone in profile</em>`;
+                phoneBar.style.display = 'flex';
+            }
         }
+
+        // Track bar — show if partner is a worker (booking chat)
+        const trackBar = document.getElementById('chatTrackBar');
+        if (trackBar && chat.type === 'booking' && partner) {
+            trackBar.innerHTML = `
+                📍 <span id="trackStatus">Track worker location</span>
+                <button id="trackBtn">📍 Start Tracking</button>
+            `;
+            trackBar.style.display = 'flex';
+            setupTracking(partner._id);
+        }
+
     } catch (e) {
         console.error('Load chat info error:', e);
+    }
+}
+
+// ===== LOCATION TRACKING =====
+function setupTracking(workerId) {
+    const trackBtn = document.getElementById('trackBtn');
+    if (!trackBtn) return;
+
+    trackBtn.addEventListener('click', async () => {
+        const statusEl = document.getElementById('trackStatus');
+        try {
+            const data = await apiGetWorkerLocation(workerId);
+            const loc = data.location;
+            if (statusEl) statusEl.textContent = `Worker at: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)} (updated ${new Date(loc.updatedAt).toLocaleTimeString()})`;
+        } catch (e) {
+            if (statusEl) statusEl.textContent = 'Worker location not available yet';
+        }
+    });
+}
+
+// Worker starts sharing their location
+export function startLocationSharing() {
+    if (isTracking || !navigator.geolocation) return;
+    isTracking = true;
+    trackingWatchId = navigator.geolocation.watchPosition(
+        async (pos) => {
+            try {
+                await apiSaveLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+            } catch (e) { /* silent */ }
+        },
+        () => { isTracking = false; },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+    );
+}
+
+export function stopLocationSharing() {
+    if (trackingWatchId !== null) {
+        navigator.geolocation.clearWatch(trackingWatchId);
+        trackingWatchId = null;
+        isTracking = false;
     }
 }
 
 // ===== POLL MESSAGES =====
 async function pollMessages() {
     if (!activeChatId) return;
-
     try {
         const data = await apiGetMessages(activeChatId, lastMessageTime);
         const messages = data.messages || [];
 
         if (messages.length > 0) {
-            // Update last message time
             const lastMsg = messages[messages.length - 1];
-            lastMessageTime = lastMsg.createdAt || lastMsg.updatedAt;
+            const newTime = lastMsg.createdAt || lastMsg.updatedAt;
 
-            // If this is the first poll, render all messages
-            if (!lastMessageTime || messages.length > 5) {
+            if (!lastMessageTime) {
+                // First load — render all
                 renderMessages(messages);
             } else {
-                // Append new messages
                 appendMessages(messages);
             }
+            lastMessageTime = newTime;
         }
     } catch (e) {
         console.error('Poll messages error:', e);
@@ -122,24 +235,17 @@ async function pollMessages() {
 function renderMessages(messages) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
-
     const user = getUser();
     if (!user) return;
 
     if (messages.length === 0) {
-        container.innerHTML = `
-            <div class="chat-empty">
-                <div style="font-size: 48px;">💬</div>
-                <p>Start the conversation!</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="chat-empty"><div style="font-size:48px">💬</div><p>Start the conversation!</p></div>`;
         return;
     }
 
     container.innerHTML = messages.map(msg => {
-        const isMine = msg.senderId === user._id;
+        const isMine = msg.senderId?.toString() === user._id?.toString();
         const time = msg.createdAt ? formatTime(new Date(msg.createdAt)) : '';
-
         return `
             <div class="chat-msg ${isMine ? 'chat-msg-mine' : 'chat-msg-theirs'}">
                 <div class="chat-bubble">
@@ -147,8 +253,7 @@ function renderMessages(messages) {
                     <div class="chat-text">${escapeHtml(msg.text)}</div>
                     <div class="chat-time">${time}</div>
                 </div>
-            </div>
-        `;
+            </div>`;
     }).join('');
 
     container.scrollTop = container.scrollHeight;
@@ -158,18 +263,15 @@ function renderMessages(messages) {
 function appendMessages(messages) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
-
     const user = getUser();
     if (!user) return;
 
-    // Remove empty placeholder if present
     const empty = container.querySelector('.chat-empty');
     if (empty) empty.remove();
 
     messages.forEach(msg => {
-        const isMine = msg.senderId === user._id;
+        const isMine = msg.senderId?.toString() === user._id?.toString();
         const time = msg.createdAt ? formatTime(new Date(msg.createdAt)) : '';
-
         const div = document.createElement('div');
         div.className = `chat-msg ${isMine ? 'chat-msg-mine' : 'chat-msg-theirs'}`;
         div.innerHTML = `
@@ -177,8 +279,7 @@ function appendMessages(messages) {
                 ${!isMine ? `<div class="chat-sender">${msg.senderName || 'User'}</div>` : ''}
                 <div class="chat-text">${escapeHtml(msg.text)}</div>
                 <div class="chat-time">${time}</div>
-            </div>
-        `;
+            </div>`;
         container.appendChild(div);
     });
 
@@ -190,15 +291,12 @@ async function sendMessage() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text || !activeChatId) return;
-
-    const user = getUser();
+    const user = requireAuth();
     if (!user) return;
 
     input.value = '';
-
     try {
         await apiSendMessage(activeChatId, text);
-        // Immediately poll for the new message
         pollMessages();
     } catch (error) {
         console.error('Send message error:', error);
@@ -208,51 +306,34 @@ async function sendMessage() {
 
 // ===== MINIMIZE / MAXIMIZE / CLOSE =====
 function minimizeChat() {
-    const panel = document.getElementById('chatPanel');
-    const fab = document.getElementById('chatFab');
-    panel.classList.remove('open');
-    fab.style.display = 'flex';
+    document.getElementById('chatPanel').classList.remove('open');
+    document.getElementById('chatFab').style.display = 'flex';
 }
-
 function maximizeChat() {
-    const panel = document.getElementById('chatPanel');
-    const fab = document.getElementById('chatFab');
-    panel.classList.add('open');
-    fab.style.display = 'none';
+    document.getElementById('chatPanel').classList.add('open');
+    document.getElementById('chatFab').style.display = 'none';
+    pollMessages();
 }
-
 function closeChat() {
-    const panel = document.getElementById('chatPanel');
-    const fab = document.getElementById('chatFab');
-    panel.classList.remove('open');
-    fab.style.display = 'none';
-    if (chatPollTimer) {
-        clearInterval(chatPollTimer);
-        chatPollTimer = null;
-    }
+    document.getElementById('chatPanel').classList.remove('open');
+    document.getElementById('chatFab').style.display = 'none';
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
     activeChatId = null;
     lastMessageTime = null;
+    const phoneBar = document.getElementById('chatPhoneBar');
+    if (phoneBar) { phoneBar.style.display = 'none'; phoneBar.innerHTML = ''; }
+    const trackBar = document.getElementById('chatTrackBar');
+    if (trackBar) { trackBar.style.display = 'none'; trackBar.innerHTML = ''; }
 }
 
 // ===== HELPERS =====
-function formatTime(date) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+function formatTime(date) { return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
 
 // ===== INIT =====
 export function initChat() {
     createChatUI();
-
-    // Listen for openChat events from other modules
     window.addEventListener('openChat', (e) => {
-        if (e.detail?.chatId) {
-            openChat(e.detail.chatId);
-        }
+        if (e.detail?.chatId) openChat(e.detail.chatId);
     });
 }

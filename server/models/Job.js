@@ -11,6 +11,14 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    employerPhone: {
+        type: String,
+        default: ''
+    },
+    employerEmail: {
+        type: String,
+        default: ''
+    },
     employerPhoto: {
         type: String,
         default: null
@@ -24,9 +32,29 @@ const jobSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
-    hours: {
+    // Schedule / Hours
+    scheduleFrom: {
         type: String,
-        default: 'Full Time (8 hrs)'
+        default: '09:00'
+    },
+    scheduleTo: {
+        type: String,
+        default: '18:00'
+    },
+    workType: {
+        type: String,
+        enum: ['Full-time', 'Part-time', 'Shift-based', '24/7 Required'],
+        default: 'Full-time'
+    },
+    leavePolicy: {
+        type: String,
+        enum: ['Weekly Off', 'No Leave', 'Flexible Leave'],
+        default: 'Weekly Off'
+    },
+    salaryType: {
+        type: String,
+        enum: ['monthly', 'daily'],
+        default: 'monthly'
     },
     salaryMin: {
         type: Number,
@@ -40,12 +68,20 @@ const jobSchema = new mongoose.Schema({
         type: String,
         default: 'Fresher'
     },
-    benefits: [{
-        type: String
-    }],
+    benefits: [{ type: String }],
+    description: {
+        type: String,
+        default: '',
+        maxlength: 1000
+    },
+    // Location
     location: {
         type: String,
         default: ''
+    },
+    coordinates: {
+        lat: { type: Number, default: 0 },
+        lng: { type: Number, default: 0 }
     },
     joinDate: {
         type: String,
@@ -63,5 +99,8 @@ const jobSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+// Geospatial-friendly index on coordinates
+jobSchema.index({ 'coordinates.lat': 1, 'coordinates.lng': 1 });
 
 export default mongoose.model('Job', jobSchema);

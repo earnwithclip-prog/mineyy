@@ -349,14 +349,33 @@
                 const budget = budgetRange?.value || '500';
                 const date = document.querySelector('#step3 input[type="date"]')?.value || '';
                 const time = document.querySelector('#step3 input[type="time"]')?.value || '';
+                const scheduleType = date ? 'later' : 'immediate';
+
+                // Capture coordinates from the booking map marker
+                let userLat = 0, userLng = 0, userLocationStr = '';
+                if (bookingMarker) {
+                    const pos = bookingMarker.getLatLng();
+                    userLat = pos.lat;
+                    userLng = pos.lng;
+                }
+                userLocationStr = document.getElementById('locationText')?.textContent || '';
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Submitting...';
 
-                const bookingId = await createBooking({ category, description, budget, date, time });
+                const bookingId = await createBooking({
+                    category,
+                    description,
+                    budget,
+                    scheduleType,
+                    date,
+                    time,
+                    userCoordinates: { lat: userLat, lng: userLng },
+                    userLocation: userLocationStr
+                });
 
                 if (bookingId) {
-                    submitBtn.textContent = '✅ Booked Successfully!';
+                    submitBtn.textContent = '✅ Request Sent! Workers Notified.';
                     submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                     setTimeout(() => {
                         currentStep = 1;

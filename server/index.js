@@ -15,15 +15,14 @@ import workerRoutes from './routes/workers.js';
 import bookingRoutes from './routes/bookings.js';
 import jobRoutes from './routes/jobs.js';
 import chatRoutes from './routes/chats.js';
+import notificationRoutes from './routes/notifications.js';
+import locationRoutes from './routes/locations.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ===== MIDDLEWARE =====
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // ===== ROUTES =====
@@ -32,6 +31,8 @@ app.use('/api/workers', workerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -70,7 +71,6 @@ async function start() {
         }
     }
 
-    // Seed demo data for in-memory DB
     if (isInMemory) {
         await seedDemoData();
     }
@@ -89,24 +89,21 @@ async function seedDemoData() {
     const bcryptLib = bcryptModule.default || bcryptModule;
     const hashedPw = await bcryptLib.hash('Demo1234!', 10);
 
-    // Demo workers
     const workers = [
-        { name: 'Raju Kumar', email: 'raju@demo.com', password: hashedPw, role: 'worker', skills: ['plumber'], pricePerHour: 350, rating: 4.8, totalJobs: 234, isAvailable: true, location: 'Hyderabad' },
-        { name: 'Suresh Reddy', email: 'suresh@demo.com', password: hashedPw, role: 'worker', skills: ['electrician'], pricePerHour: 400, rating: 4.9, totalJobs: 312, isAvailable: true, location: 'Secunderabad' },
-        { name: 'Anita Sharma', email: 'anita@demo.com', password: hashedPw, role: 'worker', skills: ['cleaner'], pricePerHour: 250, rating: 4.7, totalJobs: 156, isAvailable: true, location: 'Jubilee Hills' },
-        { name: 'Mohan Das', email: 'mohan@demo.com', password: hashedPw, role: 'worker', skills: ['ac'], pricePerHour: 500, rating: 4.6, totalJobs: 198, isAvailable: false, location: 'Banjara Hills' },
-        { name: 'Priya Patel', email: 'priya@demo.com', password: hashedPw, role: 'worker', skills: ['carpenter', 'painter'], pricePerHour: 450, rating: 4.8, totalJobs: 89, isAvailable: true, location: 'Kukatpally' },
-        { name: 'Vikram Singh', email: 'vikram@demo.com', password: hashedPw, role: 'worker', skills: ['mechanic', 'plumber'], pricePerHour: 380, rating: 4.5, totalJobs: 145, isAvailable: true, location: 'Hyderabad' },
+        { name: 'Raju Kumar', email: 'raju@demo.com', password: hashedPw, role: 'worker', skills: ['plumber'], pricePerHour: 350, rating: 4.8, totalJobs: 234, isAvailable: true, location: 'Hyderabad', phone: '9876543210' },
+        { name: 'Suresh Reddy', email: 'suresh@demo.com', password: hashedPw, role: 'worker', skills: ['electrician'], pricePerHour: 400, rating: 4.9, totalJobs: 312, isAvailable: true, location: 'Secunderabad', phone: '9876543211' },
+        { name: 'Anita Sharma', email: 'anita@demo.com', password: hashedPw, role: 'worker', skills: ['cleaner'], pricePerHour: 250, rating: 4.7, totalJobs: 156, isAvailable: true, location: 'Jubilee Hills', phone: '9876543212' },
+        { name: 'Mohan Das', email: 'mohan@demo.com', password: hashedPw, role: 'worker', skills: ['ac'], pricePerHour: 500, rating: 4.6, totalJobs: 198, isAvailable: false, location: 'Banjara Hills', phone: '9876543213' },
+        { name: 'Priya Patel', email: 'priya@demo.com', password: hashedPw, role: 'worker', skills: ['carpenter', 'painter'], pricePerHour: 450, rating: 4.8, totalJobs: 89, isAvailable: true, location: 'Kukatpally', phone: '9876543214' },
+        { name: 'Vikram Singh', email: 'vikram@demo.com', password: hashedPw, role: 'worker', skills: ['mechanic', 'plumber'], pricePerHour: 380, rating: 4.5, totalJobs: 145, isAvailable: true, location: 'Hyderabad', phone: '9876543215' },
     ];
 
-    // Demo employer
-    const employer = await User.create({ name: 'Sharma Electronics', email: 'employer@demo.com', password: hashedPw, role: 'user', location: 'Hyderabad' });
+    const employer = await User.create({ name: 'Sharma Electronics', email: 'employer@demo.com', password: hashedPw, role: 'user', location: 'Hyderabad', phone: '9000000001' });
 
     for (const w of workers) {
         await User.create(w);
     }
 
-    // Demo jobs
     const jobs = [
         { title: 'Salesman', employerId: employer._id, employerName: 'Sharma Electronics', openings: 3, hours: 'Full Time (8 hrs)', salaryMin: 12000, salaryMax: 15000, experience: 'Fresher', benefits: ['🍽️ Food', '📅 Paid Leave', '🎯 Bonus'], location: 'Hyderabad', joinDate: '' },
         { title: 'Delivery Boy', employerId: employer._id, employerName: 'QuickMart Store', openings: 5, hours: 'Full Time (8 hrs)', salaryMin: 10000, salaryMax: 12000, experience: 'Fresher', benefits: ['🚌 Transport', '🏥 Insurance'], location: 'Secunderabad', joinDate: '' },

@@ -1,219 +1,157 @@
-// ===== JOBS MODULE (Monthly Hiring) — Express/MongoDB backend =====
-import { apiPostJob, apiGetJobs, apiGetMyJobs, apiApplyToJob, apiGetApplications } from './api.js';
-import { requireAuth, showToast, getUser } from './auth.js';
+// ===== JOBS MODULE — Express/MongoDB backend =====
+import { apiGetJobs, apiGetMyJobs, apiPostJob, apiApplyToJob, apiGetJobApplications } from './api.js';
+import { getUser, showToast } from './auth.js';
+import { openChat } from './chat.js';
 
-// ===== POST JOB (Hire Monthly page) =====
-export async function postJob({ title, openings, hours, salaryMin, salaryMax, experience, benefits, location, joinDate }) {
-    const user = requireAuth();
-    if (!user) return null;
-
+// ===== POST JOB =====
+export async function postJob(data) {
     try {
-        const data = await apiPostJob({
-            title,
-            openings: parseInt(openings) || 1,
-            hours: hours || 'Full Time (8 hrs)',
-            salaryMin: parseInt(salaryMin) || 0,
-            salaryMax: parseInt(salaryMax) || 0,
-            experience: experience || 'Fresher',
-            benefits: benefits || [],
-            location: location || '',
-            joinDate: joinDate || ''
-        });
-
+        const result = await apiPostJob(data);
         showToast('✅ Job posted successfully!');
-        return data.job?._id || true;
+        return result.job?._id || true;
     } catch (error) {
-        console.error('Post job error:', error);
-        showToast('❌ Failed to post job.');
+        showToast('❌ ' + (error.message || 'Failed to post job'));
         return null;
     }
 }
 
-// ===== FETCH ALL ACTIVE JOBS (Find Job page — polling) =====
+// ===== APPLY TO JOB =====
+export async function applyToJob(jobId, coverNote) {
+    try {
+        const result = await apiApplyToJob(jobId, coverNote || '');
+        showToast('✅ Application submitted! Chat opened with employer.');
+        if (result.chatId) {
+            openChat(result.chatId);
+        }
+        return true;
+    } catch (error) {
+        showToast('❌ ' + (error.message || 'Failed to apply'));
+        return false;
+    }
+}
+
+// ===== LISTEN FOR ALL ACTIVE JOBS (public — polling) =====
 let jobPollTimer = null;
 
 export function listenForJobs(callback) {
-    async function poll() {
+    if (jobPollTimer) clearInterval(jobPollTimer);
+
+    async function fetchJobs() {
         try {
             const data = await apiGetJobs();
-            const jobs = (data.jobs || []).map(j => ({
-                ...j,
-                id: j._id,
-                createdAt: j.createdAt ? { toDate: () => new Date(j.createdAt) } : null
-            }));
-            callback(jobs);
+            callback(data.jobs || []);
         } catch (e) {
-            console.error('Jobs poll error:', e);
+            console.error('Fetch jobs error:', e);
         }
     }
 
-    poll();
-    jobPollTimer = setInterval(poll, 15000); // poll every 15s
-
-    return () => {
-        if (jobPollTimer) clearInterval(jobPollTimer);
-    };
+    fetchJobs();
+    jobPollTimer = setInterval(fetchJobs, 15000);
 }
 
-// ===== FETCH MY POSTED JOBS (Employer's sidebar — polling) =====
+// ===== LISTEN FOR MY POSTED JOBS (employer — polling) =====
 let myJobPollTimer = null;
 
-export function listenForMyJobs(employerId, callback) {
-    async function poll() {
+export function listenForMyJobs(uid, callback) {
+    if (myJobPollTimer) clearInterval(myJobPollTimer);
+
+    async function fetchMyJobs() {
         try {
             const data = await apiGetMyJobs();
-            const jobs = (data.jobs || []).map(j => ({
-                ...j,
-                id: j._id,
-                createdAt: j.createdAt ? { toDate: () => new Date(j.createdAt) } : null
-            }));
-            callback(jobs);
+            callback(data.jobs || []);
         } catch (e) {
-            console.error('My jobs poll error:', e);
+            console.error('Fetch my jobs error:', e);
         }
     }
 
-    poll();
-    myJobPollTimer = setInterval(poll, 15000);
-
-    return () => {
-        if (myJobPollTimer) clearInterval(myJobPollTimer);
-    };
+    fetchMyJobs();
+    myJobPollTimer = setInterval(fetchMyJobs, 15000);
 }
 
-// ===== APPLY TO JOB (Find Job page) =====
-export async function applyToJob(jobId, coverNote = '') {
-    const user = requireAuth();
-    if (!user) return null;
-
-    try {
-        const data = await apiApplyToJob(jobId, coverNote);
-        showToast('✅ Application submitted! You can now chat with the employer.');
-        return data.chatId || null;
-    } catch (error) {
-        console.error('Apply error:', error);
-        const msg = error.message || 'Failed to apply.';
-        showToast('❌ ' + msg);
-        return null;
-    }
-}
-
-// ===== LISTEN FOR APPLICATIONS (employer views) =====
-export function listenForApplications(jobId, callback) {
-    async function fetch() {
-        try {
-            const data = await apiGetApplications(jobId);
-            callback(data.applications || []);
-        } catch (e) {
-            console.error('Applications error:', e);
-        }
-    }
-    fetch();
-    const timer = setInterval(fetch, 20000);
-    return () => clearInterval(timer);
-}
-
-// ===== RENDER JOBS (for find-job page) =====
+// ===== RENDER JOBS (for Find Job page) =====
 export function renderJobs(jobs, container) {
     if (!container) return;
 
-    if (jobs.length === 0) {
-        container.innerHTML = `
-            <div class="card" style="text-align:center; padding: 3rem;">
-                <div style="font-size: 48px; margin-bottom: 1rem;">📋</div>
-                <h4>No jobs posted yet</h4>
-                <p style="color: var(--text-muted);">New job listings will appear here.</p>
-            </div>
-        `;
-        return;
-    }
-
-    const colors = ['#7C3AED', '#4F46E5', '#6366F1', '#8B5CF6', '#A855F7'];
-
-    container.innerHTML = jobs.map((job, i) => `
-        <div class="job-card-full" data-job-id="${job.id}">
-            <div class="jcf-left">
-                <div class="jcf-company-logo" style="background: ${colors[i % colors.length]};">${getInitials(job.employerName)}</div>
-                <div class="jcf-info">
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-company">${job.employerName} · ${job.location || 'Remote'}</div>
-                    <div class="job-meta">
-                        <div class="job-meta-item">💰 ₹${formatSalary(job.salaryMin)}${job.salaryMax ? ' - ₹' + formatSalary(job.salaryMax) : ''}/month</div>
-                        <div class="job-meta-item">⏰ ${job.hours || 'Full Time'}</div>
-                        <div class="job-meta-item">📅 ${job.joinDate || 'Immediate'}</div>
-                        <div class="job-meta-item">🎓 ${job.experience || 'Fresher OK'}</div>
+    container.innerHTML = jobs.map(job => `
+        <div class="job-card-full" data-job-id="${job._id}">
+            <div class="jcf-header">
+                <div class="jcf-company">
+                    <div class="jcf-logo">${(job.employerName || 'E')[0].toUpperCase()}</div>
+                    <div>
+                        <div class="jcf-company-name">${job.employerName || 'Employer'}</div>
+                        <div class="jcf-location">📍 ${job.location || 'Remote'}</div>
                     </div>
-                    ${job.benefits?.length ? `
-                    <div class="job-benefits">
-                        ${job.benefits.map(b => `<span class="benefit-pill">${b}</span>`).join('')}
-                    </div>` : ''}
                 </div>
+                <span class="job-type-badge">${job.hours || 'Full Time'}</span>
             </div>
+            <h3 class="jcf-title">${job.title}</h3>
+            <div class="jcf-meta">
+                <span>💰 ₹${formatSalary(job.salaryMin)} - ₹${formatSalary(job.salaryMax)}/mo</span>
+                <span>👥 ${job.openings || 1} opening${(job.openings || 1) > 1 ? 's' : ''}</span>
+                <span>📋 ${job.experience || 'Fresher'}</span>
+            </div>
+            ${job.benefits && job.benefits.length > 0 ? `
+                <div class="jcf-benefits">
+                    ${job.benefits.map(b => `<span class="benefit-tag">${b}</span>`).join('')}
+                </div>
+            ` : ''}
             <div class="jcf-actions">
-                <button class="btn btn-primary btn-sm apply-job-btn" data-id="${job.id}">Apply Now</button>
-                <button class="btn btn-secondary btn-sm">Save</button>
+                <button class="btn btn-primary apply-job-btn" data-job-id="${job._id}" data-i18n="find_apply">Apply Now →</button>
+                <button class="btn btn-outline save-job-btn">♡ Save</button>
             </div>
         </div>
     `).join('');
 
-    // Bind apply buttons
+    // Wire Apply buttons
     container.querySelectorAll('.apply-job-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const user = getUser();
+            if (!user) {
+                // Trigger auth modal
+                const { requireAuth } = await import('./auth.js');
+                requireAuth();
+                return;
+            }
+
             btn.disabled = true;
             btn.textContent = 'Applying...';
-            const chatId = await applyToJob(id);
-            if (chatId) {
+            const success = await applyToJob(btn.dataset.jobId);
+            if (success) {
                 btn.textContent = 'Applied ✓';
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-secondary');
-                window.dispatchEvent(new CustomEvent('openChat', { detail: { chatId } }));
+                btn.style.opacity = '0.7';
             } else {
                 btn.disabled = false;
-                btn.textContent = 'Apply Now';
+                btn.textContent = 'Apply Now →';
             }
+        });
+    });
+
+    // Wire Save buttons (local only)
+    container.querySelectorAll('.save-job-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.textContent = btn.textContent === '♡ Save' ? '♥ Saved' : '♡ Save';
+            btn.classList.toggle('saved');
         });
     });
 }
 
-// ===== RENDER MY JOBS (for hire-monthly sidebar) =====
+// ===== RENDER MY POSTED JOBS (for employer sidebar) =====
 export function renderMyJobs(jobs, container) {
     if (!container) return;
 
-    if (jobs.length === 0) {
-        container.innerHTML = `
-            <div class="card" style="text-align:center; padding: 2rem;">
-                <p style="color: var(--text-muted);">Your posted jobs will appear here.</p>
-            </div>
-        `;
-        return;
-    }
-
     container.innerHTML = jobs.map(job => `
-        <div class="job-card">
-            <div class="job-header">
-                <div>
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-company">${job.location || 'Location not set'}</div>
-                </div>
-                <div class="job-salary">₹${formatSalary(job.salaryMin)} - ₹${formatSalary(job.salaryMax)}</div>
+        <div class="active-job-card" data-job-id="${job._id}">
+            <div class="aj-header">
+                <div class="aj-title">${job.title}</div>
+                <span class="aj-status ${job.status === 'active' ? 'active' : ''}">${job.status === 'active' ? '🟢 Active' : '⏸ Closed'}</span>
             </div>
-            <div class="job-meta">
-                <div class="job-meta-item">📍 ${job.location || '—'}</div>
-                <div class="job-meta-item">⏰ ${job.hours || 'Full Time'}</div>
-                <div class="job-meta-item">👤 ${job.openings} Opening${job.openings > 1 ? 's' : ''}</div>
-            </div>
-            <div class="job-applicants" style="margin-top: var(--space-md);">
-                <span class="pill pill-primary">${job.applicantCount || 0} Application${job.applicantCount !== 1 ? 's' : ''}</span>
+            <div class="aj-meta">
+                <span>💰 ₹${formatSalary(job.salaryMin)}-${formatSalary(job.salaryMax)}/mo</span>
+                <span>👥 ${job.applicantCount || 0} applicants</span>
             </div>
         </div>
     `).join('');
-}
-
-// ===== HELPERS =====
-function getInitials(name) {
-    if (!name) return '?';
-    return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 }
 
 function formatSalary(n) {

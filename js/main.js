@@ -3,6 +3,7 @@ import { initI18n } from './i18n.js';
 import { initAnimations } from './animations.js';
 import { initAuth, requireAuth } from './auth.js';
 import { initChat } from './chat.js';
+import { initNotifications } from './notifications.js';
 import { initBookingPage, initWorkerDashboard } from './pages-booking.js';
 import { initHiringPage, initFindJobPage } from './pages-jobs.js';
 
@@ -98,13 +99,26 @@ function initCategoryCards() {
 }
 
 // ===== TOGGLE SWITCH =====
+// Note: #workerToggle is handled by pages-booking.js (full API + auth)
+// This generic handler only runs for other toggle elements
 function initToggles() {
     document.querySelectorAll('.toggle').forEach(toggle => {
+        // Skip #workerToggle — it's managed by initWorkerDashboard()
+        if (toggle.id === 'workerToggle') return;
+
         toggle.addEventListener('click', () => {
             toggle.classList.toggle('active');
+            const isOnline = toggle.classList.contains('active');
+
             const statusText = toggle.closest('.toggle-container')?.querySelector('.toggle-status');
             if (statusText) {
-                statusText.dataset.i18n = toggle.classList.contains('active') ? 'nwork_online' : 'nwork_offline';
+                statusText.textContent = isOnline ? "You're Online" : "You're Offline";
+            }
+
+            const indicator = document.getElementById('workerStatusIndicator');
+            if (indicator) {
+                indicator.className = 'status-indicator ' + (isOnline ? 'online' : 'offline');
+                indicator.innerHTML = '<span class="pulse-dot"></span> ' + (isOnline ? 'Online' : 'Offline');
             }
         });
     });
@@ -145,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Backend modules
     initAuth();
     initChat();
+    initNotifications();
 
     // ===== GLOBAL CTA HANDLERS =====
     // "Join Now" button on homepage should trigger auth flow instead of just jumping to "#"
@@ -167,4 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.includes('find-job')) {
         initFindJobPage();
     }
+
+    // Note: touch-action:manipulation is already set on buttons/cards via CSS
+    // which removes the 300ms tap delay without needing a JS workaround.
 });

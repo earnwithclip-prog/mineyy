@@ -20,6 +20,14 @@ const applicationSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    seekerPhone: {
+        type: String,
+        default: ''
+    },
+    seekerExperience: {
+        type: String,
+        default: ''
+    },
     seekerPhoto: {
         type: String,
         default: null
@@ -28,6 +36,11 @@ const applicationSchema = new mongoose.Schema({
         type: String,
         default: '',
         maxlength: 500
+    },
+    chatId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chat',
+        default: null
     },
     status: {
         type: String,

@@ -297,6 +297,7 @@
                         <div class="activity-tab active" data-activity-tab="bookings">📋 My Bookings</div>
                         <div class="activity-tab" data-activity-tab="applications">💼 Applications</div>
                         <div class="activity-tab" data-activity-tab="posted">📢 Posted Jobs</div>
+                        <div class="activity-tab" data-activity-tab="requests">📬 My Requests</div>
                     </div>
 
                     <div class="activity-panel active" id="bookingsPanel">
@@ -317,6 +318,12 @@
                             <p style="color: var(--text-muted);">Your posted jobs will appear here.</p>
                         </div>
                     </div>
+                    <div class="activity-panel" id="requestsPanel">
+                        <div class="activity-placeholder card" style="text-align: center; padding: var(--space-2xl);">
+                            <div style="font-size: 48px; margin-bottom: var(--space-md);">📬</div>
+                            <p style="color: var(--text-muted);">Incoming applications from job seekers and booking requests appear here.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -333,20 +340,15 @@
     </footer>
 
     <script type="module">
-        import { onAuthChange, loginWithGoogle } from '/js/firebase.js';
-        import { apiGetMyBookings, apiGetMyJobs } from '/js/api.js';
+        import { getUser, requireAuth, showToast } from '/js/auth.js';
+        import { apiGetMyBookings, apiGetMyJobs, apiGetMyApplications, apiGetJobApplications, apiUpdateApplicationStatus, apiGetMyChats, apiGetIncomingApplications, apiUpdateBookingStatus } from '/js/api.js';
+        import { openChat } from '/js/chat.js';
 
         const signedInSection = document.getElementById('profileSignedIn');
         const notSignedInSection = document.getElementById('profileNotSignedIn');
 
-        // Sign in button
-        document.querySelector('.profile-sign-in-btn')?.addEventListener('click', async () => {
-            try {
-                await loginWithGoogle();
-            } catch (e) {
-                alert('Sign-in failed. Please try again.');
-            }
-        });
+        // Sign in button — open auth modal
+        document.querySelector('.profile-sign-in-btn')?.addEventListener('click', () => { requireAuth(); });
 
         // Activity tabs
         document.querySelectorAll('.activity-tab').forEach(tab => {
@@ -354,112 +356,218 @@
                 document.querySelectorAll('.activity-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 document.querySelectorAll('.activity-panel').forEach(p => p.classList.remove('active'));
-                const target = tab.dataset.activityTab;
-                document.getElementById(target + 'Panel')?.classList.add('active');
+                document.getElementById(tab.dataset.activityTab + 'Panel')?.classList.add('active');
             });
         });
 
-        const categoryIcons = {
-            plumber: '🔧', electrician: '⚡', cleaner: '🧹',
-            ac: '❄️', carpenter: '🪚', painter: '🎨',
-            mechanic: '🔩', other: '📦'
-        };
-
-        const statusClass = {
-            pending: 'status-pending',
-            accepted: 'status-accepted',
-            confirmed: 'status-accepted',
-            completed: 'status-completed'
-        };
+        const categoryIcons = { plumber:'🔧', electrician:'⚡', cleaner:'🧹', ac:'❄️', carpenter:'🪚', painter:'🎨', mechanic:'🔩', cook:'🍳', driver:'🚗', other:'📦' };
+        const statusClass = { pending:'status-pending', accepted:'status-accepted', confirmed:'status-accepted', completed:'status-completed', rejected:'status-pending', cancelled:'status-pending' };
 
         function timeAgo(date) {
             if (!date) return '';
-            const seconds = Math.floor((new Date() - date) / 1000);
-            if (seconds < 60) return 'Just now';
-            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
-            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hrs ago';
-            return Math.floor(seconds / 86400) + ' days ago';
+            const s = Math.floor((new Date() - new Date(date)) / 1000);
+            if (s < 60) return 'Just now';
+            if (s < 3600) return Math.floor(s/60) + 'm ago';
+            if (s < 86400) return Math.floor(s/3600) + 'h ago';
+            return Math.floor(s/86400) + 'd ago';
         }
+        function capitalize(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+        function formatSalary(n) { if (!n) return '0'; return n >= 1000 ? (n/1000).toFixed(0) + 'K' : n.toString(); }
 
-        function capitalize(str) {
-            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-        }
+        async function loadDashboard(user) {
+            notSignedInSection.style.display = 'none';
+            signedInSection.style.display = '';
 
-        function formatSalary(n) {
-            if (!n) return '0';
-            if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
-            return n.toString();
-        }
+            document.getElementById('profileName').textContent = user.name || 'User';
+            document.getElementById('profileEmail').textContent = user.email || '';
+            const avatar = document.getElementById('profileAvatar');
+            if (user.photoURL) { avatar.style.backgroundImage = `url(${user.photoURL})`; avatar.style.backgroundSize = 'cover'; avatar.textContent = ''; }
+            else { avatar.textContent = (user.name || 'U')[0].toUpperCase(); }
 
-        onAuthChange(async (user) => {
-            if (user) {
-                notSignedInSection.style.display = 'none';
-                signedInSection.style.display = '';
-
-                // Update profile card
-                document.getElementById('profileName').textContent = user.name || user.displayName || 'User';
-                document.getElementById('profileEmail').textContent = user.email || '';
-                const avatar = document.getElementById('profileAvatar');
-                if (user.photoURL) {
-                    avatar.style.backgroundImage = `url(${user.photoURL})`;
-                    avatar.style.backgroundSize = 'cover';
-                    avatar.textContent = '';
+            // Load bookings
+            try {
+                const { bookings = [] } = await apiGetMyBookings();
+                document.getElementById('profileBookings').textContent = bookings.length;
+                const panel = document.getElementById('bookingsPanel');
+                if (bookings.length === 0) {
+                    panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px">📋</div><p style="color:var(--text-muted)">No bookings yet. <a href="/pages/need-worker.html" style="color:var(--primary)">Book a worker →</a></p></div>`;
                 } else {
-                    avatar.textContent = (user.name || 'U')[0].toUpperCase();
+                    panel.innerHTML = bookings.map(b => `<div class="activity-item">
+                        <div class="activity-icon">${categoryIcons[b.category] || '📋'}</div>
+                        <div class="activity-info">
+                            <div class="activity-title">${capitalize(b.category)} Service</div>
+                            <div class="activity-meta">₹${b.budget?.toLocaleString() || '—'} · ${b.workerName ? 'Worker: ' + b.workerName : 'Awaiting worker'} · ${timeAgo(b.createdAt)}</div>
+                            ${(b.status === 'confirmed' || b.status === 'in-progress') && b.workerId?.phone ? `<div class="activity-meta" style="color:#065f46;font-weight:600">📞 Worker: ${b.workerId.phone}</div>` : ''}
+                        </div>
+                        <span class="activity-status ${statusClass[b.status] || 'status-pending'}">${capitalize(b.status)}</span>
+                    </div>`).join('');
                 }
+            } catch(e) { console.error('Load bookings error:', e); }
 
-                // Load my bookings from API
-                try {
-                    const bookingsData = await apiGetMyBookings();
-                    const bookings = bookingsData.bookings || [];
-                    document.getElementById('profileBookings').textContent = bookings.length;
-                    const panel = document.getElementById('bookingsPanel');
-                    if (bookings.length === 0) {
-                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📋</div><p style="color:var(--text-muted)">No bookings yet. <a href="/pages/need-worker.html" style="color:var(--primary)">Book a worker →</a></p></div>`;
-                    } else {
-                        panel.innerHTML = bookings.map(b => `<div class="activity-item">
-                            <div class="activity-icon">${categoryIcons[b.category] || '📋'}</div>
-                            <div class="activity-info">
-                                <div class="activity-title">${capitalize(b.category)} Service</div>
-                                <div class="activity-meta">₹${b.budget?.toLocaleString() || '—'} · ${timeAgo(b.createdAt ? new Date(b.createdAt) : null)}</div>
-                            </div>
-                            <span class="activity-status ${statusClass[b.status] || 'status-pending'}">${capitalize(b.status)}</span>
-                        </div>`).join('');
-                    }
-                } catch (e) {
-                    console.error('Load bookings error:', e);
-                }
-
-                // Load my posted jobs from API
-                try {
-                    const jobsData = await apiGetMyJobs();
-                    const jobs = jobsData.jobs || [];
-                    document.getElementById('profilePosted').textContent = jobs.length;
-                    const panel = document.getElementById('postedPanel');
-                    if (jobs.length === 0) {
-                        panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px;margin-bottom:var(--space-md)">📢</div><p style="color:var(--text-muted)">No jobs posted. <a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job →</a></p></div>`;
-                    } else {
-                        panel.innerHTML = jobs.map(j => `<div class="activity-item">
+            // Load my job applications (as seeker)
+            try {
+                const { applications = [] } = await apiGetMyApplications();
+                document.getElementById('profileJobs').textContent = applications.length;
+                const panel = document.getElementById('applicationsPanel');
+                if (applications.length === 0) {
+                    panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px">💼</div><p style="color:var(--text-muted)">No applications yet. <a href="/pages/find-job.html" style="color:var(--primary)">Browse jobs →</a></p></div>`;
+                } else {
+                    panel.innerHTML = applications.map(app => {
+                        const job = app.jobId || {};
+                        const isAccepted = app.status === 'accepted';
+                        return `<div class="activity-item">
                             <div class="activity-icon">💼</div>
                             <div class="activity-info">
-                                <div class="activity-title">${j.title}</div>
-                                <div class="activity-meta">₹${formatSalary(j.salaryMin)} - ₹${formatSalary(j.salaryMax)}/mo · ${j.location || 'Remote'}</div>
+                                <div class="activity-title">${job.title || 'Job'}</div>
+                                <div class="activity-meta">${job.employerName || ''} · ₹${formatSalary(job.salaryMin)}-${formatSalary(job.salaryMax)}/mo · ${job.location || 'Remote'}</div>
+                                ${isAccepted ? `<div class="activity-meta" style="color:#065f46;font-weight:600">✅ Accepted! Open chat to coordinate.</div>` : ''}
                             </div>
-                            <span class="activity-status ${j.status === 'active' ? 'status-accepted' : 'status-completed'}">${capitalize(j.status)}</span>
-                        </div>`).join('');
-                    }
-                } catch (e) {
-                    console.error('Load jobs error:', e);
+                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                <span class="activity-status ${statusClass[app.status] || 'status-pending'}">${capitalize(app.status)}</span>
+                                ${isAccepted && app.chatId ? `<button class="btn btn-primary btn-sm open-chat-btn" data-chat="${app.chatId}" style="padding:4px 10px;font-size:0.75rem">💬 Open Chat</button>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('');
+                    panel.querySelectorAll('.open-chat-btn').forEach(btn => {
+                        btn.addEventListener('click', () => openChat(btn.dataset.chat));
+                    });
                 }
+            } catch(e) { console.error('Load applications error:', e); }
 
-                // Applications count
-                document.getElementById('profileJobs').textContent = '—';
+            // Load my posted jobs (as employer) + applicants
+            try {
+                const { jobs = [] } = await apiGetMyJobs();
+                document.getElementById('profilePosted').textContent = jobs.length;
+                const panel = document.getElementById('postedPanel');
+                if (jobs.length === 0) {
+                    panel.innerHTML = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px">📢</div><p style="color:var(--text-muted)">No jobs posted. <a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job →</a></p></div>`;
+                } else {
+                    let html = '';
+                    for (const j of jobs) {
+                        html += `<div class="activity-item" style="flex-direction:column;align-items:stretch">
+                            <div style="display:flex;align-items:center;gap:var(--space-lg)">
+                                <div class="activity-icon">💼</div>
+                                <div class="activity-info">
+                                    <div class="activity-title">${j.title} <small style="color:var(--text-muted)">(${j.applicantCount || 0} applicants)</small></div>
+                                    <div class="activity-meta">₹${formatSalary(j.salaryMin)}-${formatSalary(j.salaryMax)}/mo · ${j.location || 'Remote'}</div>
+                                </div>
+                                <span class="activity-status ${j.status === 'active' ? 'status-accepted' : 'status-completed'}">${capitalize(j.status)}</span>
+                            </div>`;
+                        if (j.applicantCount > 0) {
+                            try {
+                                const { applications: applicants = [] } = await apiGetJobApplications(j._id);
+                                if (applicants.length > 0) {
+                                    html += `<div style="margin-top:var(--space-md);padding-top:var(--space-md);border-top:1px solid rgba(0,0,0,0.06)">`;
+                                    for (const a of applicants) {
+                                        html += `<div style="display:flex;align-items:center;gap:var(--space-md);padding:8px 0">
+                                            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem">${(a.seekerName||'U')[0]}</div>
+                                            <div style="flex:1">
+                                                <div style="font-weight:600">${a.seekerName}</div>
+                                                <div style="font-size:0.8rem;color:var(--text-muted)">${a.coverNote || 'Interested in this position'}</div>
+                                            </div>
+                                            <span class="activity-status ${statusClass[a.status] || 'status-pending'}">${capitalize(a.status)}</span>
+                                            ${a.status === 'pending' ? `
+                                                <button class="btn btn-primary btn-sm accept-app-btn" data-app-id="${a._id}" style="padding:4px 12px;font-size:0.8rem;touch-action:manipulation">Accept</button>
+                                                <button class="btn btn-secondary btn-sm reject-app-btn" data-app-id="${a._id}" style="padding:4px 12px;font-size:0.8rem;touch-action:manipulation">Reject</button>
+                                            ` : a.status === 'accepted' ? `<button class="btn btn-primary btn-sm open-chat-app-btn" data-chat="${a.chatId || ''}" style="padding:4px 10px;font-size:0.75rem">💬 Chat</button>` : ''}
+                                        </div>`;
+                                    }
+                                    html += `</div>`;
+                                }
+                            } catch(ex) {}
+                        }
+                        html += `</div>`;
+                    }
+                    panel.innerHTML = html;
+                    panel.querySelectorAll('.accept-app-btn').forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            btn.disabled = true; btn.textContent = '...';
+                            try {
+                                const result = await apiUpdateApplicationStatus(btn.dataset.appId, 'accepted');
+                                showToast('✅ Application accepted!');
+                                if (result.chatId) openChat(result.chatId);
+                                loadDashboard(user);
+                            } catch(e) { showToast('❌ ' + e.message); btn.disabled = false; btn.textContent = 'Accept'; }
+                        });
+                    });
+                    panel.querySelectorAll('.reject-app-btn').forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            btn.disabled = true;
+                            try { await apiUpdateApplicationStatus(btn.dataset.appId, 'rejected'); showToast('Application rejected'); loadDashboard(user); }
+                            catch(e) { showToast('❌ ' + e.message); btn.disabled = false; }
+                        });
+                    });
+                    panel.querySelectorAll('.open-chat-app-btn').forEach(btn => {
+                        btn.addEventListener('click', () => { if (btn.dataset.chat) openChat(btn.dataset.chat); });
+                    });
+                }
+            } catch(e) { console.error('Load jobs error:', e); }
 
-            } else {
-                notSignedInSection.style.display = '';
-                signedInSection.style.display = 'none';
+            // ===== MY REQUESTS TAB: incoming applications for employers =====
+            const requestsPanel = document.getElementById('requestsPanel');
+            if (requestsPanel) {
+                let requestsHtml = '';
+                try {
+                    const { applications: incoming = [] } = await apiGetIncomingApplications();
+                    if (incoming.length > 0) {
+                        requestsHtml = `<div style="font-weight:700;margin-bottom:12px;font-size:1rem;padding:0 4px">📋 Incoming Applications (${incoming.length})</div>`;
+                        requestsHtml += incoming.map(a => {
+                            const job = a.jobId || {};
+                            return `<div class="activity-item">
+                                <div class="activity-icon">👤</div>
+                                <div class="activity-info">
+                                    <div class="activity-title">${a.seekerName} → ${job.title || 'Job'}</div>
+                                    <div class="activity-meta">${a.seekerEmail || ''} · ${job.location || ''} · ${timeAgo(a.createdAt)}</div>
+                                    <div class="activity-meta" style="font-style:italic;color:#6b7280">"${a.coverNote || 'Interested in this position'}"</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+                                    <span class="activity-status ${statusClass[a.status] || 'status-pending'}">${capitalize(a.status)}</span>
+                                    ${a.status === 'pending' ? `
+                                        <button class="btn btn-primary btn-sm req-accept-btn" data-app-id="${a._id}" style="padding:4px 12px;font-size:0.8rem;touch-action:manipulation">✅ Accept</button>
+                                        <button class="btn btn-secondary btn-sm req-reject-btn" data-app-id="${a._id}" style="padding:4px 12px;font-size:0.8rem;touch-action:manipulation">✕ Reject</button>
+                                    ` : a.status === 'accepted' ? `<button class="btn btn-primary btn-sm req-chat-btn" data-chat="${a.chatId||''}" style="padding:4px 10px;font-size:0.75rem">💬 Open Chat</button>` : ''}
+                                </div>
+                            </div>`;
+                        }).join('');
+                    } else {
+                        requestsHtml = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px">📬</div><p style="color:var(--text-muted)">No incoming requests yet.<br><a href="/pages/hire-monthly.html" style="color:var(--primary)">Post a job to receive applications →</a></p></div>`;
+                    }
+                } catch(e) {
+                    requestsHtml = `<div class="card" style="text-align:center;padding:var(--space-2xl)"><div style="font-size:48px">📬</div><p style="color:var(--text-muted)">No incoming requests yet.</p></div>`;
+                }
+                requestsPanel.innerHTML = requestsHtml;
+                requestsPanel.querySelectorAll('.req-accept-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        btn.disabled = true; btn.textContent = '...';
+                        try {
+                            const result = await apiUpdateApplicationStatus(btn.dataset.appId, 'accepted');
+                            showToast('✅ Accepted! Chat opened.');
+                            if (result.chatId) openChat(result.chatId);
+                            loadDashboard(user);
+                        } catch(e) { showToast('❌ ' + e.message); btn.disabled = false; btn.textContent = '✅ Accept'; }
+                    });
+                });
+                requestsPanel.querySelectorAll('.req-reject-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        btn.disabled = true;
+                        try { await apiUpdateApplicationStatus(btn.dataset.appId, 'rejected'); showToast('Rejected'); loadDashboard(user); }
+                        catch(e) { showToast('❌ ' + e.message); btn.disabled = false; }
+                    });
+                });
+                requestsPanel.querySelectorAll('.req-chat-btn').forEach(btn => {
+                    btn.addEventListener('click', () => { if (btn.dataset.chat) openChat(btn.dataset.chat); });
+                });
             }
+        }
+
+        window.addEventListener('authStateChanged', (e) => {
+            const user = e.detail?.user;
+            if (user) { loadDashboard(user); }
+            else { notSignedInSection.style.display = ''; signedInSection.style.display = 'none'; }
         });
+
+        const user = getUser();
+        if (user) loadDashboard(user);
     </script>
 </body>
 

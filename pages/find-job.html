@@ -5,8 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find Jobs — LocalServe</title>
-    <meta name="description"
-        content="Browse thousands of monthly job listings near you. Apply, chat with employers, and get hired today." />
+    <meta name="description" content="Browse monthly job listings near you. Apply, chat with employers, and get hired today." />
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>" />
     <link rel="stylesheet" href="/styles/variables.css" />
@@ -15,7 +14,43 @@
     <link rel="stylesheet" href="/styles/pages.css" />
     <link rel="stylesheet" href="/styles/auth.css" />
     <link rel="stylesheet" href="/styles/chat.css" />
+    <!-- Leaflet for map modal -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="/js/main.js"></script>
+    <style>
+        /* Radius Filter */
+        .radius-filter-bar { display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:14px 16px; background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); border-radius:12px; margin-bottom:16px; }
+        .radius-filter-label { font-weight:600; color:#a78bfa; font-size:0.9rem; white-space:nowrap; }
+        .radius-btns { display:flex; gap:6px; flex-wrap:wrap; }
+        .radius-btn { padding:6px 14px; border:1.5px solid rgba(124,58,237,0.4); background:transparent; color:#9ca3af; border-radius:20px; cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; touch-action:manipulation; }
+        .radius-btn.active { background:linear-gradient(135deg,#7c3aed,#4f46e5); color:#fff; border-color:transparent; }
+        .geo-status { font-size:0.8rem; color:#6b7280; margin-left:auto; }
+
+        /* Job card enhancements */
+        .jcf-top { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:8px; min-height:24px; }
+        .distance-badge { background:rgba(16,185,129,0.15); color:#10b981; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; }
+        .worktype-badge { background:rgba(124,58,237,0.15); color:#a78bfa; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; }
+        .job-desc-preview { font-size:0.82rem; color:#9ca3af; margin:6px 0; font-style:italic; }
+
+        /* Map thumbnail */
+        .job-map-thumb { position:relative; width:120px; height:70px; border-radius:8px; overflow:hidden; cursor:pointer; border:1.5px solid rgba(124,58,237,0.3); margin-top:10px; flex-shrink:0; }
+        .job-map-thumb img { width:100%; height:100%; object-fit:cover; }
+        .map-thumb-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.8rem; font-weight:700; opacity:0; transition:opacity 0.2s; }
+        .job-map-thumb:hover .map-thumb-overlay { opacity:1; }
+
+        /* Applied jobs section */
+        .section-heading { border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px; margin-bottom:20px; }
+        .applied-job-card { padding:16px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); margin-bottom:12px; }
+        .applied-job-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+        .status-badge { padding:4px 12px; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; }
+        .status-pending { background:rgba(245,158,11,0.15); color:#f59e0b; }
+        .status-accepted { background:rgba(16,185,129,0.15); color:#10b981; }
+        .status-rejected { background:rgba(239,68,68,0.15); color:#ef4444; }
+        .contact-reveal-card { background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); border-radius:10px; padding:12px; margin-top:10px; }
+        .contact-reveal-title { font-weight:700; color:#10b981; font-size:0.88rem; margin-bottom:6px; }
+        .contact-reveal-item { font-size:0.88rem; color:#d1fae5; }
+    </style>
 </head>
 
 <body>
@@ -48,15 +83,15 @@
 
     <div class="page-header">
         <div class="container">
-            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span data-i18n="srv4_title">Find a Job</span>
-            </div>
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span data-i18n="srv4_title">Find a Job</span></div>
             <h1 data-i18n="find_heading">Find Your Dream Job</h1>
-            <p data-i18n="find_sub">Browse thousands of monthly job listings near you. Apply and get hired today.</p>
+            <p data-i18n="find_sub">Browse monthly job listings near you. Apply and get hired today.</p>
         </div>
     </div>
 
     <section class="jobs-section">
         <div class="container">
+
             <!-- Search Bar -->
             <div class="search-bar reveal">
                 <div class="search-icon">🔍</div>
@@ -65,168 +100,25 @@
                 <button class="btn btn-primary">Search</button>
             </div>
 
-            <!-- Filters -->
+            <!-- Radius Filter (injected by JS above the filters) -->
+
+            <!-- Job Type Filters -->
             <div class="filters reveal reveal-delay-1">
-                <div class="filter-group">
-                    <select class="filter-select">
-                        <option data-i18n="find_filter_location">Location</option>
-                        <option>Hyderabad</option>
-                        <option>Secunderabad</option>
-                        <option>Jubilee Hills</option>
-                        <option>Banjara Hills</option>
-                        <option>Kukatpally</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <select class="filter-select">
-                        <option data-i18n="find_filter_salary">Salary Range</option>
-                        <option>₹5K - ₹10K</option>
-                        <option>₹10K - ₹15K</option>
-                        <option>₹15K - ₹25K</option>
-                        <option>₹25K+</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <select class="filter-select">
-                        <option data-i18n="find_filter_type">Job Type</option>
-                        <option>Full Time</option>
-                        <option>Part Time</option>
-                        <option>Flexible</option>
-                    </select>
-                </div>
                 <div class="filter-pills">
-                    <span class="pill pill-primary active">All</span>
-                    <span class="pill pill-primary">Nearby</span>
-                    <span class="pill pill-primary">Latest</span>
-                    <span class="pill pill-primary">Top Salary</span>
+                    <span class="pill pill-primary active" id="filterAll">All Jobs</span>
+                    <span class="pill pill-primary" id="filterLatest">Latest</span>
+                    <span class="pill pill-primary" id="filterSalary">Top Salary</span>
                 </div>
             </div>
 
-            <!-- Job Listings -->
+            <!-- Job Listings (dynamically populated) -->
             <div class="jobs-grid">
-                <div class="job-card-full reveal reveal-delay-1">
-                    <div class="jcf-left">
-                        <div class="jcf-company-logo" style="background: #7C3AED;">SE</div>
-                        <div class="jcf-info">
-                            <div class="job-title">Salesman</div>
-                            <div class="job-company">Sharma Electronics · Hyderabad</div>
-                            <div class="job-meta">
-                                <div class="job-meta-item">💰 ₹12K - ₹15K/month</div>
-                                <div class="job-meta-item">⏰ Full Time</div>
-                                <div class="job-meta-item">📅 Immediate Joining</div>
-                                <div class="job-meta-item">🎓 Fresher OK</div>
-                            </div>
-                            <div class="job-benefits">
-                                <span class="benefit-pill">🍽️ Food</span>
-                                <span class="benefit-pill">📅 Paid Leave</span>
-                                <span class="benefit-pill">🎯 Bonus</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jcf-actions">
-                        <button class="btn btn-primary btn-sm" data-i18n="find_apply">Apply Now</button>
-                        <button class="btn btn-secondary btn-sm" data-i18n="find_save">Save</button>
-                    </div>
-                </div>
-
-                <div class="job-card-full reveal reveal-delay-2">
-                    <div class="jcf-left">
-                        <div class="jcf-company-logo" style="background: #4F46E5;">QM</div>
-                        <div class="jcf-info">
-                            <div class="job-title">Delivery Boy</div>
-                            <div class="job-company">QuickMart Store · Secunderabad</div>
-                            <div class="job-meta">
-                                <div class="job-meta-item">💰 ₹10K - ₹12K/month</div>
-                                <div class="job-meta-item">⏰ Full Time</div>
-                                <div class="job-meta-item">📅 Start Next Week</div>
-                                <div class="job-meta-item">🎓 No Exp Required</div>
-                            </div>
-                            <div class="job-benefits">
-                                <span class="benefit-pill">🚌 Transport</span>
-                                <span class="benefit-pill">🏥 Insurance</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jcf-actions">
-                        <button class="btn btn-primary btn-sm" data-i18n="find_apply">Apply Now</button>
-                        <button class="btn btn-secondary btn-sm" data-i18n="find_save">Save</button>
-                    </div>
-                </div>
-
-                <div class="job-card-full reveal reveal-delay-3">
-                    <div class="jcf-left">
-                        <div class="jcf-company-logo" style="background: #6366F1;">SG</div>
-                        <div class="jcf-info">
-                            <div class="job-title">Cook / Chef</div>
-                            <div class="job-company">Spice Garden Restaurant · Jubilee Hills</div>
-                            <div class="job-meta">
-                                <div class="job-meta-item">💰 ₹15K - ₹20K/month</div>
-                                <div class="job-meta-item">⏰ Full Time</div>
-                                <div class="job-meta-item">📅 15 March</div>
-                                <div class="job-meta-item">🎓 2+ Yrs Exp</div>
-                            </div>
-                            <div class="job-benefits">
-                                <span class="benefit-pill">🍽️ Food</span>
-                                <span class="benefit-pill">🏠 Accommodation</span>
-                                <span class="benefit-pill">📅 Paid Leave</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jcf-actions">
-                        <button class="btn btn-primary btn-sm" data-i18n="find_apply">Apply Now</button>
-                        <button class="btn btn-secondary btn-sm" data-i18n="find_save">Save</button>
-                    </div>
-                </div>
-
-                <div class="job-card-full reveal reveal-delay-4">
-                    <div class="jcf-left">
-                        <div class="jcf-company-logo" style="background: #8B5CF6;">RC</div>
-                        <div class="jcf-info">
-                            <div class="job-title">Receptionist</div>
-                            <div class="job-company">Royal Clinic · Banjara Hills</div>
-                            <div class="job-meta">
-                                <div class="job-meta-item">💰 ₹13K - ₹16K/month</div>
-                                <div class="job-meta-item">⏰ Full Time</div>
-                                <div class="job-meta-item">📅 Immediate</div>
-                                <div class="job-meta-item">🎓 1+ Yr Exp</div>
-                            </div>
-                            <div class="job-benefits">
-                                <span class="benefit-pill">🏥 Insurance</span>
-                                <span class="benefit-pill">📅 Paid Leave</span>
-                                <span class="benefit-pill">🎯 Bonus</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jcf-actions">
-                        <button class="btn btn-primary btn-sm" data-i18n="find_apply">Apply Now</button>
-                        <button class="btn btn-secondary btn-sm" data-i18n="find_save">Save</button>
-                    </div>
-                </div>
-
-                <div class="job-card-full reveal">
-                    <div class="jcf-left">
-                        <div class="jcf-company-logo" style="background: #A855F7;">AS</div>
-                        <div class="jcf-info">
-                            <div class="job-title">Security Guard</div>
-                            <div class="job-company">Apex Society · Kukatpally</div>
-                            <div class="job-meta">
-                                <div class="job-meta-item">💰 ₹9K - ₹11K/month</div>
-                                <div class="job-meta-item">⏰ Night Shift</div>
-                                <div class="job-meta-item">📅 1 April</div>
-                                <div class="job-meta-item">🎓 Fresher OK</div>
-                            </div>
-                            <div class="job-benefits">
-                                <span class="benefit-pill">🏠 Accommodation</span>
-                                <span class="benefit-pill">🍽️ Food</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jcf-actions">
-                        <button class="btn btn-primary btn-sm" data-i18n="find_apply">Apply Now</button>
-                        <button class="btn btn-secondary btn-sm" data-i18n="find_save">Save</button>
-                    </div>
+                <div style="text-align:center;padding:64px;color:#6b7280;grid-column:1/-1">
+                    <div style="font-size:48px;margin-bottom:12px;">⏳</div>
+                    <p>Loading jobs...</p>
                 </div>
             </div>
+
         </div>
     </section>
 
@@ -234,8 +126,7 @@
         <div class="container">
             <div class="footer-bottom">
                 <span data-i18n="footer_copyright">© 2026 LocalServe. All rights reserved.</span>
-                <div class="footer-socials"><a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a>
-                </div>
+                <div class="footer-socials"><a href="#">𝕏</a><a href="#">in</a><a href="#">📸</a><a href="#">▶</a></div>
             </div>
         </div>
     </footer>

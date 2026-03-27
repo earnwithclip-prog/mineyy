@@ -1,52 +1,52 @@
 // ===== CHAT ROUTES =====
 import { Router } from 'express';
 import Chat from '../models/Chat.js';
+import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
+import { createNotification } from './notifications.js';
 
 const router = Router();
+
+// GET /api/chats — List all chats for current user (protected)
+router.get('/', protect, async (req, res) => {
+    try {
+        const chats = await Chat.find({ participants: req.user._id })
+            .sort({ updatedAt: -1 })
+            .populate('participants', 'name email photoURL');
+        res.json({ success: true, count: chats.length, chats });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch chats.' });
+    }
+});
 
 // GET /api/chats/:id — Get chat with messages (protected)
 router.get('/:id', protect, async (req, res) => {
     try {
-        const chat = await Chat.findById(req.params.id);
-        if (!chat) {
-            return res.status(404).json({ success: false, message: 'Chat not found.' });
-        }
+        const chat = await Chat.findById(req.params.id)
+            .populate('participants', 'name email photoURL phone');
+        if (!chat) return res.status(404).json({ success: false, message: 'Chat not found.' });
 
-        // Verify participant
-        const isParticipant = chat.participants.some(
-            p => p.toString() === req.user._id.toString()
-        );
-        if (!isParticipant) {
-            return res.status(403).json({ success: false, message: 'Not authorized.' });
-        }
+        const isParticipant = chat.participants.some(p => p._id.toString() === req.user._id.toString());
+        if (!isParticipant) return res.status(403).json({ success: false, message: 'Not authorized.' });
 
+        // Return full participant info (including phone) since they are in this chat
         res.json({ success: true, chat });
     } catch (error) {
-        console.error('Get chat error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch chat.' });
     }
 });
 
-// GET /api/chats/:id/messages — Get messages (protected, supports polling)
+// GET /api/chats/:id/messages — Get messages (polling)
 router.get('/:id/messages', protect, async (req, res) => {
     try {
         const chat = await Chat.findById(req.params.id);
-        if (!chat) {
-            return res.status(404).json({ success: false, message: 'Chat not found.' });
-        }
+        if (!chat) return res.status(404).json({ success: false, message: 'Chat not found.' });
 
-        const isParticipant = chat.participants.some(
-            p => p.toString() === req.user._id.toString()
-        );
-        if (!isParticipant) {
-            return res.status(403).json({ success: false, message: 'Not authorized.' });
-        }
+        const isParticipant = chat.participants.some(p => p.toString() === req.user._id.toString());
+        if (!isParticipant) return res.status(403).json({ success: false, message: 'Not authorized.' });
 
-        // Support "after" query param for polling (ISO timestamp)
         const { after } = req.query;
         let messages = chat.messages || [];
-
         if (after) {
             const afterDate = new Date(after);
             messages = messages.filter(m => new Date(m.createdAt) > afterDate);
@@ -54,7 +54,6 @@ router.get('/:id/messages', protect, async (req, res) => {
 
         res.json({ success: true, messages });
     } catch (error) {
-        console.error('Get messages error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch messages.' });
     }
 });
@@ -63,21 +62,13 @@ router.get('/:id/messages', protect, async (req, res) => {
 router.post('/:id/messages', protect, async (req, res) => {
     try {
         const { text } = req.body;
-        if (!text || !text.trim()) {
-            return res.status(400).json({ success: false, message: 'Message text is required.' });
-        }
+        if (!text || !text.trim()) return res.status(400).json({ success: false, message: 'Message text is required.' });
 
         const chat = await Chat.findById(req.params.id);
-        if (!chat) {
-            return res.status(404).json({ success: false, message: 'Chat not found.' });
-        }
+        if (!chat) return res.status(404).json({ success: false, message: 'Chat not found.' });
 
-        const isParticipant = chat.participants.some(
-            p => p.toString() === req.user._id.toString()
-        );
-        if (!isParticipant) {
-            return res.status(403).json({ success: false, message: 'Not authorized.' });
-        }
+        const isParticipant = chat.participants.some(p => p.toString() === req.user._id.toString());
+        if (!isParticipant) return res.status(403).json({ success: false, message: 'Not authorized.' });
 
         const message = {
             senderId: req.user._id,
@@ -90,12 +81,22 @@ router.post('/:id/messages', protect, async (req, res) => {
         chat.lastMessage = text.trim();
         await chat.save();
 
-        // Return the saved message (last in array)
         const saved = chat.messages[chat.messages.length - 1];
+
+        // Notify the other participant
+        const otherParticipants = chat.participants.filter(p => p.toString() !== req.user._id.toString());
+        for (const recipientId of otherParticipants) {
+            await createNotification(
+                recipientId,
+                'message',
+                `💬 ${req.user.name}: ${text.trim().substring(0, 60)}${text.length > 60 ? '...' : ''}`,
+                chat._id.toString(),
+                req.user.name
+            );
+        }
 
         res.status(201).json({ success: true, message: saved });
     } catch (error) {
-        console.error('Send message error:', error);
         res.status(500).json({ success: false, message: 'Failed to send message.' });
     }
 });
