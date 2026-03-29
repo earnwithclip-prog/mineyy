@@ -50,26 +50,29 @@ function mapThumb(lat, lng) {
     </div>`;
 }
 
-// ===== GLOBAL MAP MODAL =====
+// ===== GLOBAL MAP MODAL (glassmorphism) =====
 function setupMapModal() {
     if (document.getElementById('jobMapModal')) return;
     const modal = document.createElement('div');
     modal.id = 'jobMapModal';
-    modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;';
+    modal.className = 'glass-modal-overlay';
+    modal.style.display = 'none';
     modal.innerHTML = `
-        <div style="background:#1a1a2e;border-radius:16px;width:90%;max-width:500px;max-height:90vh;overflow:hidden;position:relative;">
-            <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1);">
-                <h3 style="color:#fff;margin:0;">📍 Shop Location</h3>
-                <button onclick="document.getElementById('jobMapModal').style.display='none'" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;">×</button>
+        <div class="glass-modal-overlay-bg"></div>
+        <div class="glass-modal-overlay-blur"></div>
+        <div class="glass-modal glass-modal-wide">
+            <div class="glass-modal-header">
+                <h3>📍 Shop Location</h3>
+                <button class="glass-modal-close" onclick="document.getElementById('jobMapModal').style.display='none'">✕</button>
             </div>
-            <div id="jobModalMapEl" style="height:300px;"></div>
+            <div id="jobModalMapEl" style="height:280px;border-radius:0;overflow:hidden;"></div>
             <div style="padding:16px;display:flex;gap:12px;">
-                <button id="jobMapDirectionsBtn" class="btn btn-primary" style="flex:1;">🗺️ Get Directions</button>
-                <button onclick="document.getElementById('jobMapModal').style.display='none'" class="btn btn-secondary" style="flex:1;">Close</button>
+                <button id="jobMapDirectionsBtn" class="glass-btn-primary" style="flex:1;margin-top:0;">🗺️ Get Directions</button>
+                <button onclick="document.getElementById('jobMapModal').style.display='none'" class="glass-btn-secondary" style="flex:1;">Close</button>
             </div>
         </div>`;
     document.body.appendChild(modal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    modal.querySelector('.glass-modal-overlay-bg').addEventListener('click', () => { modal.style.display = 'none'; });
 }
 
 window.openJobMap = function(lat, lng, label) {
@@ -93,7 +96,7 @@ window.openJobMap = function(lat, lng, label) {
     };
 };
 
-// ===== APPLY MODAL =====
+// ===== APPLY MODAL (glassmorphism — matches sign-in style) =====
 function openApplyModal(job) {
     const user = requireAuth();
     if (!user) return;
@@ -103,46 +106,49 @@ function openApplyModal(job) {
 
     const modal = document.createElement('div');
     modal.id = 'applyJobModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.className = 'glass-modal-overlay';
     modal.innerHTML = `
-        <div style="background:#1a1a2e;border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid rgba(124,58,237,0.3);">
-            <div style="padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1);">
-                <h3 style="color:#fff;margin:0;">Apply for: ${job.title}</h3>
-                <button id="closeApplyModal" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;line-height:1;">×</button>
+        <div class="glass-modal-overlay-bg"></div>
+        <div class="glass-modal-overlay-blur"></div>
+        <div class="glass-modal">
+            <div class="glass-modal-header">
+                <h3>Apply for: ${job.title}</h3>
+                <button id="closeApplyModal" class="glass-modal-close">✕</button>
             </div>
-            <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
-                <p style="color:#a78bfa;font-size:0.9rem;margin:0;">📍 ${job.employerName} · ${job.location || 'Location not specified'}</p>
-                <div class="form-group">
-                    <label class="form-label">Your Name</label>
-                    <input id="applyName" type="text" class="form-input" value="${user.name || ''}" placeholder="Full Name">
+            <div class="glass-modal-body">
+                <p class="glass-modal-subtitle">📍 ${job.employerName} · ${job.location || 'Location not specified'}</p>
+                <div class="glass-form-group">
+                    <label class="glass-label">Your Name</label>
+                    <input id="applyName" type="text" class="glass-input" value="${user.name || ''}" placeholder="Full Name">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Phone Number <span style="color:#ef4444">*</span></label>
-                    <input id="applyPhone" type="tel" class="form-input" value="${user.phone || ''}" placeholder="10-digit mobile number">
+                <div class="glass-form-group">
+                    <label class="glass-label">Phone Number <span style="color:#ef4444">*</span></label>
+                    <input id="applyPhone" type="tel" class="glass-input" value="${user.phone || ''}" placeholder="10-digit mobile number">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input id="applyEmail" type="email" class="form-input" value="${user.email || ''}" placeholder="Email address">
+                <div class="glass-form-group">
+                    <label class="glass-label">Email</label>
+                    <input id="applyEmail" type="email" class="glass-input" value="${user.email || ''}" placeholder="Email address">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Experience</label>
-                    <select id="applyExp" class="form-input">
+                <div class="glass-form-group">
+                    <label class="glass-label">Experience</label>
+                    <select id="applyExp" class="glass-input">
                         <option value="Fresher">Fresher (No experience)</option>
                         <option value="1-2 Years">1-2 Years</option>
                         <option value="2-5 Years">2-5 Years</option>
                         <option value="5+ Years">5+ Years</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Message (Optional)</label>
-                    <textarea id="applyNote" class="form-input" rows="3" placeholder="Tell the employer why you're suitable..."></textarea>
+                <div class="glass-form-group">
+                    <label class="glass-label">Message (Optional)</label>
+                    <textarea id="applyNote" class="glass-input" rows="3" placeholder="Tell the employer why you're suitable..."></textarea>
                 </div>
-                <button id="submitApplyBtn" class="btn btn-primary btn-lg" style="width:100%;margin-top:8px;">Send Application →</button>
+                <button id="submitApplyBtn" class="glass-btn-primary">Send Application →</button>
             </div>
         </div>`;
 
     document.body.appendChild(modal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    modal.querySelector('.glass-modal-overlay-blur').addEventListener('click', (e) => { if (e.target === modal.querySelector('.glass-modal-overlay-blur')) modal.remove(); });
+    modal.querySelector('.glass-modal-overlay-bg').addEventListener('click', () => modal.remove());
     document.getElementById('closeApplyModal').addEventListener('click', () => modal.remove());
 
     document.getElementById('submitApplyBtn').addEventListener('click', async () => {

@@ -90,12 +90,12 @@ async function seedDemoData() {
     const hashedPw = await bcryptLib.hash('Demo1234!', 10);
 
     const workers = [
-        { name: 'Raju Kumar', email: 'raju@demo.com', password: hashedPw, role: 'worker', skills: ['plumber'], pricePerHour: 350, rating: 4.8, totalJobs: 234, isAvailable: true, location: 'Hyderabad', phone: '9876543210' },
-        { name: 'Suresh Reddy', email: 'suresh@demo.com', password: hashedPw, role: 'worker', skills: ['electrician'], pricePerHour: 400, rating: 4.9, totalJobs: 312, isAvailable: true, location: 'Secunderabad', phone: '9876543211' },
-        { name: 'Anita Sharma', email: 'anita@demo.com', password: hashedPw, role: 'worker', skills: ['cleaner'], pricePerHour: 250, rating: 4.7, totalJobs: 156, isAvailable: true, location: 'Jubilee Hills', phone: '9876543212' },
-        { name: 'Mohan Das', email: 'mohan@demo.com', password: hashedPw, role: 'worker', skills: ['ac'], pricePerHour: 500, rating: 4.6, totalJobs: 198, isAvailable: false, location: 'Banjara Hills', phone: '9876543213' },
-        { name: 'Priya Patel', email: 'priya@demo.com', password: hashedPw, role: 'worker', skills: ['carpenter', 'painter'], pricePerHour: 450, rating: 4.8, totalJobs: 89, isAvailable: true, location: 'Kukatpally', phone: '9876543214' },
-        { name: 'Vikram Singh', email: 'vikram@demo.com', password: hashedPw, role: 'worker', skills: ['mechanic', 'plumber'], pricePerHour: 380, rating: 4.5, totalJobs: 145, isAvailable: true, location: 'Hyderabad', phone: '9876543215' },
+        { name: 'Raju Kumar', email: 'raju@demo.com', password: hashedPw, role: 'worker', skills: ['plumber'], pricePerHour: 350, rating: 4.8, totalJobs: 234, isAvailable: true, location: 'Hyderabad', phone: '9876543210', coordinates: { lat: 17.3850, lng: 78.4867 } },
+        { name: 'Suresh Reddy', email: 'suresh@demo.com', password: hashedPw, role: 'worker', skills: ['electrician'], pricePerHour: 400, rating: 4.9, totalJobs: 312, isAvailable: true, location: 'Secunderabad', phone: '9876543211', coordinates: { lat: 17.4399, lng: 78.4983 } },
+        { name: 'Anita Sharma', email: 'anita@demo.com', password: hashedPw, role: 'worker', skills: ['cleaner'], pricePerHour: 250, rating: 4.7, totalJobs: 156, isAvailable: true, location: 'Jubilee Hills', phone: '9876543212', coordinates: { lat: 17.4156, lng: 78.4100 } },
+        { name: 'Mohan Das', email: 'mohan@demo.com', password: hashedPw, role: 'worker', skills: ['ac'], pricePerHour: 500, rating: 4.6, totalJobs: 198, isAvailable: false, location: 'Banjara Hills', phone: '9876543213', coordinates: { lat: 17.4239, lng: 78.4738 } },
+        { name: 'Priya Patel', email: 'priya@demo.com', password: hashedPw, role: 'worker', skills: ['carpenter', 'painter'], pricePerHour: 450, rating: 4.8, totalJobs: 89, isAvailable: true, location: 'Kukatpally', phone: '9876543214', coordinates: { lat: 17.4849, lng: 78.3997 } },
+        { name: 'Vikram Singh', email: 'vikram@demo.com', password: hashedPw, role: 'worker', skills: ['mechanic', 'plumber'], pricePerHour: 380, rating: 4.5, totalJobs: 145, isAvailable: true, location: 'Hyderabad', phone: '9876543215', coordinates: { lat: 17.3900, lng: 78.5000 } },
     ];
 
     const employer = await User.create({ name: 'Sharma Electronics', email: 'employer@demo.com', password: hashedPw, role: 'user', location: 'Hyderabad', phone: '9000000001' });
@@ -105,9 +105,39 @@ async function seedDemoData() {
     }
 
     const jobs = [
-        { title: 'Salesman', employerId: employer._id, employerName: 'Sharma Electronics', openings: 3, hours: 'Full Time (8 hrs)', salaryMin: 12000, salaryMax: 15000, experience: 'Fresher', benefits: ['🍽️ Food', '📅 Paid Leave', '🎯 Bonus'], location: 'Hyderabad', joinDate: '' },
-        { title: 'Delivery Boy', employerId: employer._id, employerName: 'QuickMart Store', openings: 5, hours: 'Full Time (8 hrs)', salaryMin: 10000, salaryMax: 12000, experience: 'Fresher', benefits: ['🚌 Transport', '🏥 Insurance'], location: 'Secunderabad', joinDate: '' },
-        { title: 'Cook / Chef', employerId: employer._id, employerName: 'Spice Garden Restaurant', openings: 2, hours: 'Full Time (8 hrs)', salaryMin: 15000, salaryMax: 20000, experience: '2-5 Years', benefits: ['🍽️ Food', '🏠 Accommodation', '📅 Paid Leave'], location: 'Jubilee Hills', joinDate: '' },
+        {
+            title: 'Salesman', employerId: employer._id, employerName: 'Sharma Electronics',
+            employerPhone: '9000000001', employerEmail: 'employer@demo.com',
+            openings: 3, workType: 'Full-time', leavePolicy: 'Weekly Off',
+            scheduleFrom: '09:00', scheduleTo: '18:00', salaryType: 'monthly',
+            salaryMin: 12000, salaryMax: 15000, experience: 'Fresher',
+            benefits: ['🍽️ Food Provided', '📅 Paid Leaves', '🎯 Bonus'],
+            description: 'Looking for an energetic salesman to manage retail operations and customer interactions.',
+            location: 'Hyderabad', coordinates: { lat: 17.3850, lng: 78.4867 }, joinDate: '',
+            status: 'active'
+        },
+        {
+            title: 'Delivery Boy', employerId: employer._id, employerName: 'QuickMart Store',
+            employerPhone: '9000000001', employerEmail: 'employer@demo.com',
+            openings: 5, workType: 'Full-time', leavePolicy: 'Weekly Off',
+            scheduleFrom: '08:00', scheduleTo: '20:00', salaryType: 'monthly',
+            salaryMin: 10000, salaryMax: 12000, experience: 'Fresher',
+            benefits: ['🚌 Transport', '🏥 Health Insurance'],
+            description: 'Delivery rider needed for local grocery and essentials delivery within 10 km radius.',
+            location: 'Secunderabad', coordinates: { lat: 17.4399, lng: 78.4983 }, joinDate: '',
+            status: 'active'
+        },
+        {
+            title: 'Cook / Chef', employerId: employer._id, employerName: 'Spice Garden Restaurant',
+            employerPhone: '9000000001', employerEmail: 'employer@demo.com',
+            openings: 2, workType: 'Shift-based', leavePolicy: 'Flexible Leave',
+            scheduleFrom: '07:00', scheduleTo: '15:00', salaryType: 'monthly',
+            salaryMin: 15000, salaryMax: 20000, experience: '2-5 Years',
+            benefits: ['🍽️ Food Provided', '🏠 Accommodation', '📅 Paid Leaves'],
+            description: 'Experienced chef needed. Must know South Indian and North Indian cuisines. Accommodation provided.',
+            location: 'Jubilee Hills', coordinates: { lat: 17.4156, lng: 78.4100 }, joinDate: '',
+            status: 'active'
+        },
     ];
 
     for (const j of jobs) {

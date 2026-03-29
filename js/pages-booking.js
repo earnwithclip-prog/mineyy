@@ -201,20 +201,47 @@ export async function initWorkerDashboard() {
     const totalJobsEl = document.querySelector('.ec-stat-value');
     const ratingEl = document.querySelectorAll('.ec-stat-value')[1];
 
-    // Load real stats
-    loadWorkerStats(earningsAmount, totalJobsEl, ratingEl);
-
-    // Load incoming jobs
     let workerLat = 0, workerLng = 0;
-    navigator.geolocation?.getCurrentPosition(
-        (pos) => {
-            workerLat = pos.coords.latitude;
-            workerLng = pos.coords.longitude;
-            loadIncomingJobs(incomingContainer, workerLat, workerLng);
-        },
-        () => loadIncomingJobs(incomingContainer, 0, 0),
-        { enableHighAccuracy: false, timeout: 8000 }
-    );
+
+    function startDashboard() {
+        // Load real stats
+        loadWorkerStats(earningsAmount, totalJobsEl, ratingEl);
+
+        // Get GPS then load incoming jobs
+        navigator.geolocation?.getCurrentPosition(
+            (pos) => {
+                workerLat = pos.coords.latitude;
+                workerLng = pos.coords.longitude;
+                loadIncomingJobs(incomingContainer, workerLat, workerLng);
+            },
+            () => loadIncomingJobs(incomingContainer, 0, 0),
+            { enableHighAccuracy: false, timeout: 8000 }
+        );
+
+        // Load job history
+        loadJobHistory();
+    }
+
+    // Check auth state
+    const user = getUser();
+    if (user) {
+        startDashboard();
+    } else {
+        // Show sign-in prompt
+        if (incomingContainer) {
+            incomingContainer.innerHTML = `
+                <div class="card" style="text-align:center;padding:var(--space-2xl)">
+                    <div style="font-size:48px;margin-bottom:16px">🔐</div>
+                    <h4 style="color:#fff;margin-bottom:8px;">Sign in to start working</h4>
+                    <p style="color:#9ca3af;margin-bottom:16px;">Sign in to see nearby job requests and toggle your availability.</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('userAuthBtn')?.click()">Sign In / Register</button>
+                </div>`;
+        }
+        // Listen for login
+        window.addEventListener('authStateChanged', (e) => {
+            if (e.detail?.user) startDashboard();
+        }, { once: true });
+    }
 
     // Toggle online/offline
     if (workerToggle) {
@@ -254,9 +281,6 @@ export async function initWorkerDashboard() {
             }
         });
     }
-
-    // Load job history
-    loadJobHistory();
 
     // Refresh incoming jobs every 30s
     setInterval(() => {
@@ -387,6 +411,13 @@ async function loadIncomingJobs(container, lat, lng) {
 
     } catch (err) {
         console.warn('Could not load pending bookings:', err.message);
+        if (container) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center;padding:var(--space-2xl)">
+                    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+                    <p style="color:#9ca3af;">Could not load job requests. Is the server running?<br><small style="font-size:0.8em">${err.message}</small></p>
+                </div>`;
+        }
     }
 }
 
