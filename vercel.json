@@ -1,10 +1,13 @@
 {
-    "buildCommand": "npx vite build",
+    "framework": "vite",
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
     "outputDirectory": "dist",
     "rewrites": [
-        {
-            "source": "/pages/(.*)",
-            "destination": "/pages/$1"
-        }
+        { "source": "/pages/need-worker", "destination": "/pages/need-worker.html" },
+        { "source": "/pages/need-work",   "destination": "/pages/need-work.html"   },
+        { "source": "/pages/hire-monthly","destination": "/pages/hire-monthly.html"},
+        { "source": "/pages/find-job",    "destination": "/pages/find-job.html"    },
+        { "source": "/pages/profile",     "destination": "/pages/profile.html"     }
     ]
-}
+}
